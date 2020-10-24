@@ -1,0 +1,86 @@
+.header-wrapper{
+    position: fixed;
+    width: 20%;
+    height: 100%;
+    right: 0;
+    background: #030632;
+    color: #fff;
+    padding: 20px 0;
+    z-index: 99;
+
+    .header-account{
+        position: relative;
+
+        .header-avatar{
+            left: 0;
+            width: 130px;
+            height: 130px;
+            border: 5px solid #fff;
+            border-radius: 50%;
+            background: #fff;
+
+            img{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;     
+                border-radius: 50%;
+                object-fit: cover;
+            }
+        }
+
+        .header-account-account{
+            position: relative;
+            float: right;
+            padding-right: 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+
+            &:after{
+                content: "";
+                display: block;
+                top: 20%;
+                right: 0;
+                position: absolute;
+                width: 5px;
+                height: 5px;
+                border-right: 1px solid #fff;
+                border-bottom: 1px solid #fff;
+                transform: rotate(45deg);
+            }
+
+            .header-account__dropdown{
+                position: absolute;
+                background: #1e1e1c9e;
+                width: 200px;
+                left: 0;
+                padding: 20px;
+            
+
+                li{
+                    list-style: none;
+                }
+            }
+        }
+    }
+
+    .login{
+        margin-right: 20px;
+    }
+
+    .logo-letters{
+        position: absolute;
+        font-size: 300px;
+        bottom: 0;
+        left: 10%;
+        font-weight: 800;
+        color: #030632;
+        text-shadow: 5px 1px 5px #0000005c;
+    }
+
+    .add_new_project{
+        margin-top: 50px;
+    }
+    
+}

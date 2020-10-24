@@ -1,0 +1,79 @@
+.home-wrapper{
+    margin-top: 80px;
+    .add_new_project{
+        span{
+            font-size: 20px;
+            margin-right: 10px;
+        }
+    }
+}
+
+.select-finder{
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.search-wrap{
+    position: relative;
+}
+.search{
+    position: relative;
+    width: 800px;
+    padding: 10px 20px;
+    font-size: 17px;
+    border: none;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.192);
+    outline: none;
+    color: rgb(104, 102, 102);
+
+    &::placeholder{
+        font-style: italic;
+        color: rgb(167, 164, 164);
+    }
+}
+.projects{
+    position: relative;
+    height: 900px;
+    margin: 50px 0;
+    padding: 5px;
+    overflow: scroll;
+
+    a{
+        display: block;
+        padding-left: 0;
+    }
+
+    .project-load_more{
+        width: 800px;
+    }
+}
+.project-block{
+    position: relative;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 0px 10px rgba(0, 0, 0, 0.11);
+    width: 800px;
+    transition: .3s;
+
+    .project-block__title{
+        text-transform: uppercase;
+        margin-bottom: 2rem;
+    }
+
+    .project-block__description{
+        white-space: pre;
+    }
+
+    .project-price{
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-weight: 500;
+    }
+
+    &:hover{
+        box-shadow: 0 0px 10px rgba(0, 0, 0, 0.336);
+    }
+
+}
+

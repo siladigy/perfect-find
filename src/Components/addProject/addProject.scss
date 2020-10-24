@@ -1,0 +1,52 @@
+.add-project-wrapper{
+    padding: 100px;
+
+    form{
+
+        .project-field{
+            margin-bottom: 50px;
+
+            label{
+                display: block;
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+
+            input{
+                width: 400px;
+                height: 40px;
+                padding: 0 20px;
+                font-size: 17px;
+            }
+
+            #price{
+                width: 100px;
+                margin-right: 20px;
+            }
+
+            select{
+                height: 40px;
+                width: 60px;
+            }
+
+            textarea{
+                width: 800px;
+                height: 300px;
+                padding: 20px;
+                font-size: 17px;
+                font-family: sans-serif;
+            }
+
+            .project-field-info{
+                font-style: italic;
+            }
+        }
+
+        button{
+            padding: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+    }
+}

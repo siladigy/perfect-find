@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap');
+
+.logo-wrapper{
+    margin-bottom: 30px;
+
+    .logo{
+        position: relative;
+        font-size: 35px;
+        color: #000000;
+        padding: 0;
+        font-family: 'Comfortaa', sans-serif;
+
+        span{
+            color: #000;
+        }
+    }
+}
