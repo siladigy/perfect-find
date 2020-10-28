@@ -10,27 +10,24 @@ import profile from './../../images/profile.png'
 
 const Dialog = (props) => {
     
-    var dialog = props.match.params.dialogId;
+    var dialogId = props.match.params.dialogId;
     
     const [message, setMessage] = useState(null)
-    const [dialogId, setDialogId] = useState(dialog)
+    // const [dialogId, setDialogId] = useState(dialog)
 
     useEffect(() => {
-        setDialogId(dialog)
-        debugger
-        if (dialogId) {
-            props.getDialogData(dialogId)
-        }
+
+        props.getDialogData(dialogId)
         
     },[dialogId]);
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        if(dialogId === props.match.params.dialogId) {
-            props.checkView(dialogId);
-        }
+    //     if(dialogId === props.match.params.dialogId) {
+    //         props.checkView(dialogId);
+    //     }
 
-    },[props.dialogData]);
+    // },[props.dialogData]);
 
     const messagesEndRef = useRef(null)
     const textarea = useRef(null)
