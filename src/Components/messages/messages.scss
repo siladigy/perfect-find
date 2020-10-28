@@ -1,0 +1,62 @@
+.dialogs-list{
+    width: 350px;
+
+    a{
+        padding: 0;
+        display: block;
+    }
+
+    .dialog-block{
+        display: flex;
+        border-top: 1px solid rgba(184, 184, 184, 0.445);
+        border-right: 1px solid rgba(184, 184, 184, 0.445);
+        border-bottom: 1px solid rgba(184, 184, 184, 0.445);
+        padding: 15px 15px;
+        margin: 0;
+        // transition: .3s;
+
+        .dialog-text_wrap{
+            position: relative;
+            margin-left: 10px;
+
+            .dialog_name{
+                text-transform: capitalize;
+                font-weight: 500;
+                font-size: 18px;
+            }
+
+            .dialog_time{
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                font-size: 10px;
+            }
+            
+            .dialog_message{
+                width: 160px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                margin-top: 10px;
+                font-size: 13px;
+                opacity: .8;
+            }
+        }
+
+        img{
+            width: 70px;
+            height: 70px;
+        }
+
+        &.selected{
+            background: linear-gradient(15deg, #5f37c0, #eb15a9);
+            // transform: scale(1.05);
+            // transform-origin: left;
+
+            .dialog-text_wrap{
+                color: #fff;
+            }
+        }
+        
+    }
+}

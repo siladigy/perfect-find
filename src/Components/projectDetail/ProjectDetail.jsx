@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-// import {authState} from './../../redux/authReducer'
+import {authState} from './../../redux/authReducer'
 import { getProjectDetails, submitProposal, sendMessage } from '../../redux/projectDetailReducer'
 import { connect } from 'react-redux';
 import { Redirect, withRouter } from 'react-router-dom';
@@ -15,7 +15,7 @@ const ProjectDetail = (props) => {
     useEffect(() => {
         props.getProjectDetails(projectId);
         props.projectAuthorId === props.authId ? setAuth(true) : setAuth(false)
-    },[]);
+    },[props.authState]);
 
     const submitProposal = (e) => {
         e.preventDefault()
@@ -95,7 +95,7 @@ let mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    // authState,
+    authState,
     getProjectDetails,
     submitProposal,
     sendMessage

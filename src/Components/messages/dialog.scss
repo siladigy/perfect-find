@@ -1,10 +1,12 @@
+.messages-wrap{
+    height: calc(100vh - 120px);
+}
 .dialog-window{
     position: relative;
-    padding: 10px;
-    margin-left: 20px;
-    width: 800px;
-    height: 700px;
-    background: rgb(209, 209, 209);
+    padding: 10px 50px;
+    width: 100%;
+    height: 100%;
+    background: #bcc4bd1f;
 
 
     .dialogs-wrap{
@@ -42,6 +44,12 @@
             white-space: pre-line;
             border-radius: 10px;
             border-radius: 10px 10px 10px 0;
+            box-shadow: 10px 10px 10px #80808040;
+        }
+
+        .dialog_time{
+            color: #00000045;
+            font-size: 13px;
         }
 
         &.me{
@@ -54,6 +62,12 @@
                     background: linear-gradient(45deg, #2196F3, #00d499);
                     color: #fff;
                     border-radius: 10px 10px 0;
+                    box-shadow: -10px 10px 10px #80808040;
+                }
+
+                .dialog_time{
+                    display: flex;
+                    justify-content: flex-end;
                 }
             }
            

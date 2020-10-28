@@ -84,34 +84,51 @@ export const submitProposal = (projectId, text) => {
 
 export const sendMessage = (userId, projectId, proposalText) => {
     
-    return async (dispatch) => {
+    return (dispatch) => {
     
         const db = firebase.firestore();
 
-        const data = db.collection("users").doc(userId)
-        const userData = await data.get()
-
-        firebase.auth().onAuthStateChanged(function(data) {
+        firebase.auth().onAuthStateChanged(async function(data) {
             if (data) {
                 const user = firebase.auth().currentUser 
                 var doc = db.collection("messages").doc()
+
+                const interlocutor = db.collection("users").doc(userId)
+                const interlocutorData = await interlocutor.get()
+
+                const author = db.collection("users").doc(user.uid)
+                const authorData = await author.get()
+
                 doc.set({
                     users: [user.uid, userId],
-                    interlocutor: userId,
-                    firstName: userData.data().firstName,
-                    lastName: userData.data().lastName,
-                    img: userData.data().avatar || null,
-                    projectId: projectId,
-                    dialog: {}
+                    interlocutor: {
+                        id: userId,
+                        firstName: interlocutorData.data().firstName,
+                        lastName: interlocutorData.data().lastName,
+                        img: interlocutorData.data().avatar || null
+                    },
+                    author: {
+                        id: user.uid,
+                        firstName: authorData.data().firstName,
+                        lastName: authorData.data().lastName,
+                        img: authorData.data().avatar || null
+                    },
+                    checkView: user.uid,
+                    messageId: doc.id,
+                    lastMessage: proposalText,
+                    lastUpdate: new Date().getTime(),
+                    lastMessageAuthor: userId,
+                    projectId: projectId
                 }).then(() => {
                     console.log('chat created')
                     db.collection('messages').doc(doc.id).collection('dialog').doc().set({
                         id: userId,
-                        firstName: userData.data().firstName,
-                        lastName: userData.data().lastName,
-                        img: userData.data().avatar || null,
+                        firstName: interlocutorData.data().firstName,
+                        lastName: interlocutorData.data().lastName,
+                        img: interlocutorData.data().avatar || null,
                         text: proposalText,
-                        createdAt: new Date().getTime()
+                        createdAt: new Date().getTime(),
+                        viewed: false
                     }).then(() => {
                         console.log('proposal added')
                         dispatch (handleProposal(doc.id))
