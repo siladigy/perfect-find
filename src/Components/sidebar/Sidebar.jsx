@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {authState, signOut, updatePhoto, getUserData} from '../../redux/authReducer'
 import profile from './../../images/profile.png' 
+import mail from './../../images/mail.svg'
 
 
 const Sidebar = React.memo((props) => {
@@ -38,8 +39,6 @@ const Sidebar = React.memo((props) => {
                     {props.hasAccount ? 
                     <div className="header-account">
                         <div className="header-avatar">
-                        <div className="header-spinner"></div>
-
                         {props.photoUrl? 
                         <img src={props.photoUrl} alt=""/>:
                         <>
@@ -47,6 +46,9 @@ const Sidebar = React.memo((props) => {
                         <input type="file" onChange={imgUpload} />
                         </>
                         }
+                        </div>
+                        <div className="mail">
+                           <NavLink to='/messages'><img src={mail} alt=""/></NavLink> 
                         </div>
                         <div className="header-account-account">
                             <div className="header-account__title">My account</div>
@@ -76,7 +78,6 @@ const Sidebar = React.memo((props) => {
                 </div>
             </div>
 
-            <span className="logo-letters">YPF</span>
         </div>
     )
 })

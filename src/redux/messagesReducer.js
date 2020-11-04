@@ -1,5 +1,6 @@
 import * as firebase from 'firebase';
 import "firebase/storage";
+import SimpleCrypto from "simple-crypto-js"
 
 const SET_DIALOGS = 'SET_DIALOGS';
 const SET_DIALOG_DATA = 'SET_DIALOG_DATA';
@@ -76,25 +77,47 @@ export const getDialogs = () => {
     }
 }
 
+var stopDialogDataListener;
 
 export const getDialogData = (id) => {
+    console.log('get dialog data')
 
     return (dispatch) => {
         const db = firebase.firestore();
+        firebase.auth().onAuthStateChanged(async function(data) {
+            if (data) {
 
-        const query = db.collection('messages').doc(id).collection('dialog').orderBy('createdAt');
+                const user = firebase.auth().currentUser 
 
-        const observer = query.onSnapshot(data => {
-            console.log(id)
+                const checkQuery = db.collection('messages').doc(id)
+                const checkQueryData = await checkQuery.get()
 
-            dispatch (setDialogData(data))
+                const query = db.collection('messages').doc(id).collection('dialog').orderBy('createdAt');
 
-        }, err => {
-        console.log(`Encountered error: ${err}`);
+                if (checkQueryData.data().users.includes(user.uid)) {
+                    stopDialogDataListener = query.onSnapshot(data => {
+                        console.log(id)
+            
+                        dispatch (setDialogData(data))
+            
+                    }, err => {
+                    console.log(`Encountered error: ${err}`);
+                    });
+                } 
+            }
         });
     }
 
-    
+}
+
+export const stopPreviousData = () => {
+
+    return (dispatch) => {
+        if(stopDialogDataListener){
+            stopDialogDataListener()
+            console.log('stop listener')
+        }  
+    }
 }
 
 export const checkView = (id) => {
@@ -135,11 +158,28 @@ export const sendMessage = (dialogId, text) => {
                 const data = db.collection("users").doc(user.uid)
                 const userData = await data.get()
 
-                db.collection('messages').doc(dialogId).update({
-                    lastMessage: text,
+                const dialog = db.collection('messages').doc(dialogId)
+                const dialogData = await dialog.get()
+
+                var lastUpdate = new Date().getTime()
+                var simpleCrypto = new SimpleCrypto(lastUpdate);
+
+                var counter = null;
+
+                if(dialogData.data().checkView === user.uid){
+                    counter = dialogData.data().unreadCounter + 1
+                } else {
+                    counter = 1
+                }
+
+                var msg = typeof(text) === 'string' ? text : 'sent images'
+
+                dialog.update({
+                    lastMessage: simpleCrypto.encrypt(msg),
                     lastMessageAuthor: user.uid,
-                    lastUpdate: new Date().getTime(),
-                    checkView: user.uid
+                    lastUpdate: lastUpdate,
+                    checkView: user.uid,
+                    unreadCounter: counter
                 }).then(() => {
                     console.log('dialog data updated')
                 })
@@ -149,8 +189,9 @@ export const sendMessage = (dialogId, text) => {
                     firstName: userData.data().firstName,
                     lastName: userData.data().lastName,
                     img: userData.data().avatar || null,
-                    text: text,
-                    createdAt: new Date().getTime(),
+                    text: typeof(text) === 'string' ? simpleCrypto.encrypt(text) : null,
+                    images: typeof(text) !== 'string' ? text : null,
+                    createdAt: lastUpdate,
                     viewed: false
                 }).then(() => {
                     console.log('message added')
@@ -159,6 +200,42 @@ export const sendMessage = (dialogId, text) => {
             }
         });
     }
+}
+
+export const onUploadSubmission = (dialogId, files) => {
+
+    return (dispatch) => {
+
+        const promises = [];
+        const fileURL = [];
+
+        files.forEach(file => {
+
+         const uploadTask = firebase.storage().ref().child(`messages/${file.name}`).put(file);
+            promises.push(uploadTask);
+            uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, snapshot => {
+            
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                   if (snapshot.state === firebase.storage.TaskState.RUNNING) {
+                    console.log(`Progress: ${progress}%`);
+                   }
+                 },
+                 error => console.log(error.code),
+                 async () => {
+                   const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                   fileURL.push(downloadURL)
+                  }
+                 );
+               });
+           Promise.all(promises)
+            .then(() => {
+                console.log('All files uploaded')
+                console.log(typeof(fileURL), fileURL)
+                dispatch (sendMessage(dialogId, fileURL))
+            })
+            .catch(err => console.log(err.code));
+    }
+      
 }
 
 export default messages;

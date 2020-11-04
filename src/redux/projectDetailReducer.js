@@ -1,5 +1,6 @@
 import * as firebase from 'firebase';
 import "firebase/storage";
+import SimpleCrypto from "simple-crypto-js"
 
 const SET_PROJECT_DATA = 'SET_PROJECT_DATA';
 const SET_PROJECT_AUTHOR = 'SET_PROJECT_AUTHOR';
@@ -90,6 +91,7 @@ export const sendMessage = (userId, projectId, proposalText) => {
 
         firebase.auth().onAuthStateChanged(async function(data) {
             if (data) {
+
                 const user = firebase.auth().currentUser 
                 var doc = db.collection("messages").doc()
 
@@ -98,6 +100,9 @@ export const sendMessage = (userId, projectId, proposalText) => {
 
                 const author = db.collection("users").doc(user.uid)
                 const authorData = await author.get()
+
+                var lastUpdate = new Date().getTime()
+                var simpleCrypto = new SimpleCrypto(lastUpdate);
 
                 doc.set({
                     users: [user.uid, userId],
@@ -114,9 +119,10 @@ export const sendMessage = (userId, projectId, proposalText) => {
                         img: authorData.data().avatar || null
                     },
                     checkView: user.uid,
+                    unreadCounter: null,
                     messageId: doc.id,
-                    lastMessage: proposalText,
-                    lastUpdate: new Date().getTime(),
+                    lastMessage: simpleCrypto.encrypt(proposalText),
+                    lastUpdate: lastUpdate,
                     lastMessageAuthor: userId,
                     projectId: projectId
                 }).then(() => {
@@ -126,14 +132,16 @@ export const sendMessage = (userId, projectId, proposalText) => {
                         firstName: interlocutorData.data().firstName,
                         lastName: interlocutorData.data().lastName,
                         img: interlocutorData.data().avatar || null,
-                        text: proposalText,
-                        createdAt: new Date().getTime(),
+                        text: simpleCrypto.encrypt(proposalText),
+                        createdAt: lastUpdate,
                         viewed: false
                     }).then(() => {
                         console.log('proposal added')
                         dispatch (handleProposal(doc.id))
                     });
-                })
+                }).catch(function(error) {
+                    console.log(error)
+                });
             }
         })
           

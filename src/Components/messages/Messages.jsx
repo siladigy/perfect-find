@@ -2,9 +2,12 @@ import React, {useEffect, useState, useSelector } from 'react';
 import { connect } from 'react-redux';
 import { NavLink , withRouter } from 'react-router-dom';
 import { getDialogs } from '../../redux/messagesReducer'
+import SimpleCrypto from "simple-crypto-js"
 
 import './messages.scss'
 import profile from './../../images/profile.png'
+
+import notification from './../../sounds/notification.mp3'
 
 const Messages = (props) => {
 
@@ -15,6 +18,12 @@ const Messages = (props) => {
     useEffect(() => {
         props.getDialogs();
     },[]);
+
+    const notif = new Audio(notification);
+
+    const playSound = audioFile => {
+        audioFile.play();
+    }
 
     const getPhoto = (data) => {
         var img = props.authId === data.author.id ? data.interlocutor.img : data.author.img
@@ -39,19 +48,25 @@ const Messages = (props) => {
         return `${hours} : ${minutes}` 
     }
 
+    const decryptText = (text, key) => {
+        var simpleCrypto = new SimpleCrypto(key)
+        var res = simpleCrypto.decrypt(text) == 'sent images' ? <i>{simpleCrypto.decrypt(text)}</i> : simpleCrypto.decrypt(text)
+        return res
+    }
+
     return (
         <div className='dialogs-list'>
             {props.dialogs ? props.dialogs.map((data, index) => 
             <NavLink to={"/message/" + data.messageId} key={index}>
             <div className={"dialog-block " + (dialogId === data.messageId ? 'selected' : null)}>
             <img src={getPhoto(data)} />
-            {data.checkView !== props.authId && data.checkView ? <span>new</span> : null}
             <div className="dialog-text_wrap">
+            {dialogId !== data.messageId && data.checkView !== props.authId && data.checkView ? <span className='dialog_counter'>{data.unreadCounter}{playSound(notif)} </span>  : null}
             <div className="dialog_name">{getName(data)}</div>
             <span className="dialog_time">{convertTime(data.lastUpdate)}</span>
             <div className="dialog_message">
             <span>{getMessageAuthor(data)}: </span>
-            {data.lastMessage}
+            {decryptText(data.lastMessage, data.lastUpdate)}
             </div>
             </div>
             </div>

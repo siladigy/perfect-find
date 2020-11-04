@@ -16,7 +16,8 @@
     "react-scripts": "3.4.3",
     "redux": "^4.0.5",
     "redux-firestore": "^0.13.0",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "simple-crypto-js": "^3.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

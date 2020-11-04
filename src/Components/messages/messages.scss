@@ -1,5 +1,6 @@
 .dialogs-list{
     width: 350px;
+    border-right: 1px solid rgba(184, 184, 184, 0.445);
 
     a{
         padding: 0;
@@ -9,7 +10,6 @@
     .dialog-block{
         display: flex;
         border-top: 1px solid rgba(184, 184, 184, 0.445);
-        border-right: 1px solid rgba(184, 184, 184, 0.445);
         border-bottom: 1px solid rgba(184, 184, 184, 0.445);
         padding: 15px 15px;
         margin: 0;
@@ -41,6 +41,19 @@
                 font-size: 13px;
                 opacity: .8;
             }
+
+            .dialog_counter{
+                position: absolute;
+                right: 0;
+                width: 30px;
+                height: 30px;
+                background: #ff5722;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 100%;
+                color: #fff;
+            }
         }
 
         img{
@@ -56,6 +69,10 @@
             .dialog-text_wrap{
                 color: #fff;
             }
+        }
+
+        &.new{
+            background: #000;
         }
         
     }
