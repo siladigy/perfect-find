@@ -1,6 +1,8 @@
 .dialogs-list{
+    position: relative;
     width: 350px;
-    border-right: 1px solid rgba(184, 184, 184, 0.445);
+    box-shadow: 10px 10px 20px #cfc9c930;
+    z-index: 99;
 
     a{
         padding: 0;
@@ -9,8 +11,8 @@
 
     .dialog-block{
         display: flex;
-        border-top: 1px solid rgba(184, 184, 184, 0.445);
-        border-bottom: 1px solid rgba(184, 184, 184, 0.445);
+        // border-top: 1px solid rgba(184, 184, 184, 0.445);
+        // border-bottom: 1px solid rgba(184, 184, 184, 0.445);
         padding: 15px 15px;
         margin: 0;
         // transition: .3s;
@@ -18,6 +20,7 @@
         .dialog-text_wrap{
             position: relative;
             margin-left: 10px;
+            color: #3b3b3b;
 
             .dialog_name{
                 text-transform: capitalize;
@@ -45,9 +48,11 @@
             .dialog_counter{
                 position: absolute;
                 right: 0;
-                width: 30px;
-                height: 30px;
-                background: #ff5722;
+                width: 20px;
+                height: 20px;
+                background: #52d1ee;
+                box-shadow: 0 0 10px #52d1ee;
+                font-size: 13px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -59,15 +64,14 @@
         img{
             width: 70px;
             height: 70px;
+            border-radius: 100%;
         }
 
         &.selected{
-            background: linear-gradient(15deg, #5f37c0, #eb15a9);
-            // transform: scale(1.05);
-            // transform-origin: left;
+            background: #f4f0ff;
 
             .dialog-text_wrap{
-                color: #fff;
+                color: #2c035a;
             }
         }
 
@@ -76,4 +80,19 @@
         }
         
     }
+}
+
+.item-enter {
+    opacity: 0;
+}
+.item-enter-active {
+    opacity: 1;
+    transition: opacity 500ms ease-in;
+}
+.item-exit {
+    opacity: 1; 
+}
+.item-exit-active {
+    opacity: 0;
+    transition: opacity 500ms ease-in;
 }

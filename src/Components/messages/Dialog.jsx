@@ -1,7 +1,9 @@
 import React, {useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+
 import SimpleCrypto from "simple-crypto-js"
+import moment from 'moment';
 
 import { getDialogData, sendMessage, checkView, stopPreviousData, onUploadSubmission } from '../../redux/messagesReducer'
 import Messages from './Messages';
@@ -9,6 +11,7 @@ import Messages from './Messages';
 import './dialog.scss'
 import profile from './../../images/profile.png'
 import send from './../../images/send.svg'
+import images from './../../images/images.svg'
 
 const Dialog = (props) => {
     
@@ -70,11 +73,24 @@ const Dialog = (props) => {
     }
 
     const convertTime = (number) => {
+
+        var weekDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+
         var time = new Date(number)
+        var today = new Date() 
+        var yesterday = new Date(Date.now() - 864e5)
+        var dayBeforeYesterday = new Date(Date.now() - 864e5 * 2)
+
         var hours = time.getHours().toString().length > 1 ? time.getHours() : '0' + time.getHours()
         var minutes = time.getMinutes().toString().length > 1 ? time.getMinutes() : '0' + time.getMinutes()
 
-        return `${hours} : ${minutes}` 
+        var day = 
+        time.toDateString() === yesterday.toDateString() ? 'yesterday' :
+        time.toDateString() === dayBeforeYesterday.toDateString() ? weekDays[time.getDay()] :
+        time.toDateString() === today.toDateString() ? '' : 
+        time.getFullYear() + "." + (time.getMonth() + 1) + "." + time.getDate();
+
+        return moment(number).fromNow() 
     }
 
     const getHeaderData = (data) => {
@@ -100,22 +116,43 @@ const Dialog = (props) => {
             newFile["src"] = URL.createObjectURL(e.target.files[i])
             newFile["id"] = Math.random();
             arr.push(newFile)  
-            previewImg.push(URL.createObjectURL(e.target.files[i]))
         }
         setFiles(arr);
-        console.log(previewImg)
+
+        arr.forEach(file => {
+            previewImg.push(file.src)
+        })
+
         setPreview(previewImg);
     };
 
-    const getImages = (img) => {
-        if (img) {
-           
-            for (let i = 0; i < img.length; i++) {
-                console.log(img[i])
-            } 
-            
+    const dateLine = (i, previ) => {
+
+        var today = new Date() 
+        var yesterday = new Date(Date.now() - 864e5)
+        var dayBeforeYesterday = new Date(Date.now() - 864e5 * 2)
+
+        if (new Date(i).toDateString() === yesterday.toDateString() && new Date(previ).toDateString() === dayBeforeYesterday.toDateString() ) {
+            return <div className='dateLine'><span>yesterday</span></div>
+        } 
+        else if (new Date(i).toDateString() === today.toDateString() && new Date(previ).toDateString() === yesterday.toDateString()) {
+            return <div className='dateLine'><span>today</span></div>
         }
+  
     }
+
+    const removeFromAdding = (evt) => {
+        var prev = [...preview]
+        var arr = [...files]
+
+        arr = arr.filter(e => e.src !== evt.target.id )
+        prev = prev.filter(e => e !== evt.target.id )
+
+        setPreview(prev)
+        setFiles(arr)
+    }
+
+    
     return (
         <div className='flexbox messages-wrap'>
             <Messages />
@@ -131,13 +168,16 @@ const Dialog = (props) => {
                     ) : null}
                 </div> */}
                 <div className="dialogs-wrap">
-                    {props.dialogData ? Object.entries(props.dialogData).map(([key, value], i) => 
+                    {props.dialogData ? props.dialogData.map((value, i) => 
+                    <>
+                    {props.dialogData[i-1] ? dateLine(props.dialogData[i].createdAt, props.dialogData[i-1].createdAt) : null}
+
                     <div className={"dialog " + (props.authId === value.id ? 'me' : 'not')}>
 
                         <div className="dialog_img">
                             <img src={value.img ? value.img : profile} />
                         </div>
-
+                     
                         <div className="dialog_text">
                             <div className="dialog_time">{convertTime(value.createdAt)}</div> 
                            {value.text ? <div className="dialog_message">{decryptText(value.text, value.createdAt)}</div> : null} 
@@ -150,21 +190,29 @@ const Dialog = (props) => {
                         </div>
                        
                     </div>
+                    </>
                     ): null}
                      <div ref={messagesEndRef} />
                 </div>
 
-                <div className="preview">
-                    {preview.map((data) => <span>
-                        <img src={data} />
-                    </span>
-                   )}
-                </div>
-                  
-                    
-                <form> 
-                    <input type="file" multiple accept="image/*" onChange={onFileChange} />
+                 {preview.length > 0 ?
+                    <div className="preview">
+                        {preview.map((data) => 
+                        <span>
+                            <div id={data} className="preview__remove" onClick={removeFromAdding}>x</div>
+                            <img src={data} />
+                        </span>
+                        )}
+                    </div>
+                 :null}
 
+                <div className="dialog_buttons">
+                    <label htmlFor="images">
+                        <img src={images} />
+                    </label>
+                    <input id="images" type="file" multiple accept="image/*" onChange={onFileChange} />
+                </div>
+                <form> 
                     <textarea placeholder="type something..." ref={textarea} onKeyDown={onKeyDown} onFocus={toggleTyping} onChange={handleMessage} />
                     <button type="submit" onClick={onCLick}>
                         <img src={send} alt=""/>

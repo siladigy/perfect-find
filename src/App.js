@@ -12,7 +12,6 @@ import Logo from './Components/logo/Logo';
 import Messages from './Components/messages/Messages';
 import Dialog from './Components/messages/Dialog';
 
-
 const App = () => {  
 
 return (
@@ -27,6 +26,7 @@ return (
     <Route exact path="/add-project" component={AddProject} />
     <Route exact path="/messages" component={Messages} />
     <Route exact path="/message/:dialogId?" component={Dialog} />
+  
     </div>
   </BrowserRouter>
 )

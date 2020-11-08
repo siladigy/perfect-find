@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { NavLink , withRouter } from 'react-router-dom';
 import { getDialogs } from '../../redux/messagesReducer'
 import SimpleCrypto from "simple-crypto-js"
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import './messages.scss'
 import profile from './../../images/profile.png'
@@ -41,11 +42,23 @@ const Messages = (props) => {
     }
 
     const convertTime = (number) => {
+        var weekDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+
         var time = new Date(number)
+        var today = new Date() 
+        var yesterday = new Date(Date.now() - 864e5)
+        var dayBeforeYesterday = new Date(Date.now() - 864e5 * 2)
+
         var hours = time.getHours().toString().length > 1 ? time.getHours() : '0' + time.getHours()
         var minutes = time.getMinutes().toString().length > 1 ? time.getMinutes() : '0' + time.getMinutes()
 
-        return `${hours} : ${minutes}` 
+        var day = 
+        time.toDateString() === yesterday.toDateString() ? 'yesterday' :
+        time.toDateString() === dayBeforeYesterday.toDateString() ? weekDays[time.getDay()] :
+        time.toDateString() === today.toDateString() ? '' : 
+        time.getFullYear() + "." + (time.getMonth() + 1) + "." + time.getDate();
+
+        return `${day}  ${hours} : ${minutes}` 
     }
 
     const decryptText = (text, key) => {
@@ -56,7 +69,14 @@ const Messages = (props) => {
 
     return (
         <div className='dialogs-list'>
+            <TransitionGroup className="dialogs">
+          
             {props.dialogs ? props.dialogs.map((data, index) => 
+            <CSSTransition
+            key={index}
+            timeout={(index+1)*1000}
+            classNames="item"
+          >
             <NavLink to={"/message/" + data.messageId} key={index}>
             <div className={"dialog-block " + (dialogId === data.messageId ? 'selected' : null)}>
             <img src={getPhoto(data)} />
@@ -71,7 +91,9 @@ const Messages = (props) => {
             </div>
             </div>
             </NavLink>
+            </CSSTransition>
             ): null}
+            </TransitionGroup>
         </div>
     )
 }

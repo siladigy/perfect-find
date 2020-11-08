@@ -32,16 +32,17 @@ const messages = (state = initialState, action) => {
             }
         case SET_DIALOG_DATA:
 
-            var obj = {}
+            var arr = []
 
             action.data.forEach(doc => {
-                Object.assign(obj, ({[doc.id]: doc.data()}));
+                arr.push(doc.data())
+                // Object.assign(obj, ({[doc.id]: doc.data()}));
             });
               
 
             return {
                 ...state,
-                dialogData: {...obj}
+                dialogData: arr
             }
         default: 
             return state;

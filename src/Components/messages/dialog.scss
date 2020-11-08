@@ -3,15 +3,44 @@
 }
 .dialog-window{
     position: relative;
-    padding: 10px 50px;
     width: 100%;
     height: 100%;
-    background: #bcc4bd1f;
+    background: #e2e5f31f;
 
+    .dateLine{
+        position: relative;
+        text-transform: capitalize;
+        margin: 80px 100px 30px;
+        text-align: center;
+        opacity: 0.2;
+
+        span{
+            position: relative;
+            padding: 10px 30px;
+            z-index: 2;
+        }
+
+        &:before,
+        &:after{
+            content: '';
+            position: absolute;
+            display: block;
+            height: 1px;
+            width: 40%;
+            left: 0;
+            top: 50%;
+            background: #000;
+        }
+        &:after{
+            left: auto;
+            right: 0;
+        }
+    }
 
     .dialogs-wrap{
         overflow: scroll;
-        height: 85%;
+        height: calc(100% - 150px);
+        padding: 10px 50px;
     }
 
     .dialog-header{
@@ -110,11 +139,54 @@
 
     .preview{
         display: flex;
+        position: absolute;
+        bottom: 150px;
+        background: #9f9b9bb8;
+        width: 100%;
+
+        span{
+            position: relative;
+            
+            .preview__remove{
+                position: absolute;
+                right: -10px;
+                top: 10px;
+                background: #ffffffb8;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 25px;
+                height: 25px;
+                border-radius: 100%;
+                cursor: pointer;
+            }
+        }
 
         img{
+            margin: 20px 0;
+            margin-left: 20px;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+    }
+
+    .dialog_buttons{
+        position: absolute;
+        left: 0;
+        bottom: 100px;
+        background: #fff;
+        width: 100%;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.144);
+
+        label img{
             width: 50px;
             height: 50px;
-            object-fit: cover;
+            cursor: pointer;
+        }
+
+        input{
+            display: none;
         }
     }
 
@@ -135,6 +207,10 @@
             font-size: 18px;
             border: none;
             outline: none;
+
+            &::placeholder{
+                color: rgb(184, 184, 184);
+            }
         }
 
         button{
