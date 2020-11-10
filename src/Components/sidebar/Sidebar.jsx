@@ -3,9 +3,12 @@ import './sidebar.scss'
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {authState, signOut, updatePhoto, getUserData} from '../../redux/authReducer'
+
 import profile from './../../images/profile.png' 
+import edit from './../../images/edit.svg'
 import mail from './../../images/mail.svg'
 
+import Resizer from "react-image-file-resizer"
 
 const Sidebar = React.memo((props) => {
 
@@ -29,7 +32,23 @@ const Sidebar = React.memo((props) => {
 
     const imgUpload = (e) => {
         const file = e.target.files[0]
-        props.updatePhoto(file)
+        const size = file.size/1024
+        if (size > 300) {
+            Resizer.imageFileResizer(
+                file, // the file from input
+                300, // width
+                300, // height
+                "JPEG", // compress format WEBP, JPEG, PNG
+                70, // quality
+                0, // rotation
+                (uri) => {
+                    props.updatePhoto(uri)
+                },
+                'blob')
+        } else {
+            props.updatePhoto(file)
+        }
+       
     }
 
     return (
@@ -43,9 +62,12 @@ const Sidebar = React.memo((props) => {
                         <img src={props.photoUrl} alt=""/>:
                         <>
                         <img src={profile} alt=""/>
-                        <input type="file" onChange={imgUpload} />
                         </>
                         }
+                        <label htmlFor="avatar">
+                            <img src={edit} />
+                        </label>
+                        <input id="avatar" type="file" accept="image/*" onChange={imgUpload} />
                         </div>
                         <div className="mail">
                            <NavLink to='/messages'><img src={mail} alt=""/></NavLink> 

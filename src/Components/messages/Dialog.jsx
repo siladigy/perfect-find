@@ -1,9 +1,9 @@
 import React, {useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-
 import SimpleCrypto from "simple-crypto-js"
 import moment from 'moment';
+import Resizer from "react-image-file-resizer"
 
 import { getDialogData, sendMessage, checkView, stopPreviousData, onUploadSubmission } from '../../redux/messagesReducer'
 import Messages from './Messages';
@@ -13,6 +13,7 @@ import profile from './../../images/profile.png'
 import send from './../../images/send.svg'
 import images from './../../images/images.svg'
 
+
 const Dialog = (props) => {
     
     var dialogId = props.match.params.dialogId;
@@ -20,6 +21,7 @@ const Dialog = (props) => {
     const [message, setMessage] = useState(null)
     const [files, setFiles] = useState([])
     const [preview, setPreview] = useState([])
+    const [active, setActive] = useState(null)
 
     useEffect(() => {
         props.stopPreviousData()
@@ -44,9 +46,7 @@ const Dialog = (props) => {
         }
         if(files.length > 0){
             props.onUploadSubmission(dialogId, files)
-        } else {
-            console.log(false)
-        }
+        } 
         setPreview([])
     }
 
@@ -113,17 +113,33 @@ const Dialog = (props) => {
         var arr = []
         for (let i = 0; i < e.target.files.length; i++) {
             const newFile = e.target.files[i];
+            const size = newFile.size/1024
             newFile["src"] = URL.createObjectURL(e.target.files[i])
             newFile["id"] = Math.random();
-            arr.push(newFile)  
+            previewImg.push(newFile["src"])
+            if (size > 300) {
+                Resizer.imageFileResizer(newFile, 500, 500, "JPEG", 100, 0, (uri) => {
+
+                    function blobToFile(theBlob, fileName){
+                        theBlob.lastModifiedDate = new Date();
+                        theBlob.name = fileName;
+                        theBlob.id = newFile["id"];
+                        theBlob.src = newFile["src"];
+                        return theBlob;
+                    }
+
+                    var myFile = blobToFile(uri, newFile.name);
+                    arr.push(myFile)
+                    
+                }, 'blob')
+            } else {
+                arr.push(newFile)
+            }
+              
         }
-        setFiles(arr);
-
-        arr.forEach(file => {
-            previewImg.push(file.src)
-        })
-
+        setFiles(arr); 
         setPreview(previewImg);
+
     };
 
     const dateLine = (i, previ) => {
@@ -132,11 +148,14 @@ const Dialog = (props) => {
         var yesterday = new Date(Date.now() - 864e5)
         var dayBeforeYesterday = new Date(Date.now() - 864e5 * 2)
 
-        if (new Date(i).toDateString() === yesterday.toDateString() && new Date(previ).toDateString() === dayBeforeYesterday.toDateString() ) {
+        if (new Date(i).toDateString() === yesterday.toDateString() && new Date(previ).toDateString() !== yesterday.toDateString() ) {
             return <div className='dateLine'><span>yesterday</span></div>
         } 
-        else if (new Date(i).toDateString() === today.toDateString() && new Date(previ).toDateString() === yesterday.toDateString()) {
+        else if (new Date(i).toDateString() === today.toDateString() && new Date(previ).toDateString() !== today.toDateString()) {
             return <div className='dateLine'><span>today</span></div>
+        }
+        else if(new Date(i).toDateString() !== new Date(previ).toDateString()) {
+            return <div className='dateLine'><span>{new Date(i).toDateString()}</span></div>
         }
   
     }
@@ -152,6 +171,10 @@ const Dialog = (props) => {
         setFiles(arr)
     }
 
+    const handleView = (e) => {
+        console.log(e.target.src)
+        setActive(e.target.src)
+    }
     
     return (
         <div className='flexbox messages-wrap'>
@@ -184,7 +207,9 @@ const Dialog = (props) => {
                         
                             {value.images ? <div className='dialog_images'>
                             {Object.keys(value.images).map(img => (
-                                <img src={value.images[img]} />
+                                <div className={"dialog_image " + (value.images[img] === active ? 'selected' : null)} onClick={handleView}>
+                                <img src={value.images[img]} /> 
+                                </div>
                             ))}
                             </div>:null}
                         </div>
@@ -199,7 +224,7 @@ const Dialog = (props) => {
                     <div className="preview">
                         {preview.map((data) => 
                         <span>
-                            <div id={data} className="preview__remove" onClick={removeFromAdding}>x</div>
+                            <div id={data} className="preview__remove" onClick={removeFromAdding}>&#215;</div>
                             <img src={data} />
                         </span>
                         )}
@@ -218,7 +243,10 @@ const Dialog = (props) => {
                         <img src={send} alt=""/>
                     </button>
                 </form>
-                 </> : null}
+                 </> : 
+                 <div className="loader">
+                     <div className="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                 </div>}
                 
             </div>
         </div>

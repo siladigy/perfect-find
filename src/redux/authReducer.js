@@ -145,7 +145,7 @@ export const updatePhoto = (file) => {
         const db = firebase.firestore();
 
         const storageRef = firebase.storage().ref()
-        const fileRef = storageRef.child(file.name)
+        const fileRef = storageRef.child(`avatars/${user.uid}`)
         await fileRef.put(file)
 
         var imgUrl = await fileRef.getDownloadURL()

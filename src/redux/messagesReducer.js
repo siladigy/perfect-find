@@ -34,11 +34,16 @@ const messages = (state = initialState, action) => {
 
             var arr = []
 
-            action.data.forEach(doc => {
-                arr.push(doc.data())
-                // Object.assign(obj, ({[doc.id]: doc.data()}));
-            });
-              
+
+            if (action.data) {
+                action.data.forEach(doc => {
+                    arr.push(doc.data())
+                    // Object.assign(obj, ({[doc.id]: doc.data()}));
+                });
+            } else {
+                arr = null
+            }
+
 
             return {
                 ...state,
@@ -116,6 +121,7 @@ export const stopPreviousData = () => {
     return (dispatch) => {
         if(stopDialogDataListener){
             stopDialogDataListener()
+            dispatch (setDialogData(null))
             console.log('stop listener')
         }  
     }
