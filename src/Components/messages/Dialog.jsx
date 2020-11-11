@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef } from 'react';
+import React, {useEffect, useState, useRef, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import SimpleCrypto from "simple-crypto-js"
@@ -14,7 +14,7 @@ import send from './../../images/send.svg'
 import images from './../../images/images.svg'
 
 
-const Dialog = (props) => {
+const Dialog = React.memo((props) => {
     
     var dialogId = props.match.params.dialogId;
     
@@ -24,9 +24,10 @@ const Dialog = (props) => {
     const [active, setActive] = useState(null)
 
     useEffect(() => {
-        props.stopPreviousData()
-        props.getDialogData(dialogId)
-        
+        props.getDialogData(dialogId);
+        return () => {
+            props.stopPreviousData();
+        }
     },[dialogId]);
 
     const messagesEndRef = useRef(null)
@@ -39,7 +40,7 @@ const Dialog = (props) => {
         }
     }, [props.dialogData]);
 
-    const sendMessage = () => {
+    const sendMessage = useCallback(() => {
         if((textarea.current.value).trim() !== ''){
             props.sendMessage(dialogId, message)
             textarea.current.value = ''
@@ -48,7 +49,7 @@ const Dialog = (props) => {
             props.onUploadSubmission(dialogId, files)
         } 
         setPreview([])
-    }
+    },[])
 
     const onCLick = (e) => {
         e.preventDefault();
@@ -251,7 +252,7 @@ const Dialog = (props) => {
             </div>
         </div>
     )
-}
+})
 
 let ProjectWithRouter = withRouter(Dialog)
 

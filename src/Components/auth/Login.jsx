@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import {login, authState} from '../../redux/authReducer'
 import './auth.scss'
 import { NavLink, Redirect } from 'react-router-dom';
-
+import hire from './../../images/hire.svg'
 
 const Login = (props) =>{
 
@@ -33,27 +33,37 @@ const Login = (props) =>{
         {props.hasAccount ? 
             <Redirect to="/" />: 
             <div className="login-wrapper">
+                <img src={hire} />
+            <div className="login-right">
+                <div className="login-logo">
+                    <NavLink to='/'><h1>your<span>.</span> perfect<span>.</span> find<span>.</span></h1></NavLink> 
+                </div><span>.</span>
+            </div>
+            <div className="login-form">
             <form onSubmit={submitForm}>
-            <h2>Log in</h2>
+            <h2>Welcome back</h2>
             {props.error ? <div className="email-errors">{props.error}</div> : null}
             <div className="email-wrapper">
-            <label htmlFor="email">Email</label>
-            <input type="email" id="email" onChange={changeEmailField} />
+            <input type="email" placeholder='email' id="email" onChange={changeEmailField} />
             {props.emailError ? <div className="email-errors">{props.emailError}</div> : null}
             </div>
             <div className="password-wrapper">
-            <label htmlFor="password">Password</label>
-            <input type="password" id="password" onChange={changePasswordField} />
+            <input type="password" placeholder='password' id="password" onChange={changePasswordField} />
             {props.passwordError ? <div className="password-errors">{props.passwordError}</div> : null}
             </div>
             <div className="">
-            <button type="submit">Log in</button>
-            <div className="login-close">
-                <NavLink to='/'>X</NavLink>
-             </div>
+            <button type="submit">Sign in</button>
+            </div>
+            <div className="login-links">
+          
+                <NavLink to='/'>Forgot password?</NavLink>
+                <NavLink to='/register'>Don't have an account?</NavLink>
+            
             </div>
             
             </form>
+            </div>
+            
 
         </div> 
         }
