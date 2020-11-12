@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import {login, authState} from '../../redux/authReducer'
 import './auth.scss'
 import { NavLink, Redirect } from 'react-router-dom';
+
 import hire from './../../images/hire.svg'
 
 const Login = (props) =>{

@@ -4,6 +4,7 @@ import SimpleCrypto from "simple-crypto-js"
 
 const SET_DIALOGS = 'SET_DIALOGS';
 const SET_DIALOG_DATA = 'SET_DIALOG_DATA';
+const SET_UPLOAD_PROGRESS = 'SET_UPLOAD_PROGRESS';
 
 
 const _ = require('lodash')
@@ -11,7 +12,8 @@ const _ = require('lodash')
 
 let initialState = {
     dialogsList: [],
-    dialogData: null
+    dialogData: null,
+    uploadProgress: null
 }  
 
 
@@ -49,6 +51,11 @@ const messages = (state = initialState, action) => {
                 ...state,
                 dialogData: arr
             }
+        case SET_UPLOAD_PROGRESS:
+            return {
+                ...state,
+                uploadProgress: action.data === 100 ? null : action.data
+            }
         default: 
             return state;
     }   
@@ -58,6 +65,7 @@ const messages = (state = initialState, action) => {
 
 export const setDialogs = (data) => ({ type: SET_DIALOGS, data : data })
 export const setDialogData = (data) => ({ type: SET_DIALOG_DATA, data : data })
+export const setUploadProgress = (data) => ({ type: SET_UPLOAD_PROGRESS, data : data })
 
 export const getDialogs = () => {
 
@@ -154,7 +162,7 @@ export const checkView = (id) => {
     }
 }
 
-export const sendMessage = (dialogId, text) => {
+export const sendMessage = (dialogId, text, type) => {
 
     return (dispatch) => {
         const db = firebase.firestore();
@@ -179,7 +187,7 @@ export const sendMessage = (dialogId, text) => {
                     counter = 1
                 }
 
-                var msg = typeof(text) === 'string' ? text : 'sent images'
+                var msg = typeof(text) === 'string' ? text : typeof(text) !== 'string' && type === 'images' ? 'sent images' : typeof(text) !== 'string' && type === 'docs' ? 'sent files' : null
 
                 dialog.update({
                     lastMessage: simpleCrypto.encrypt(msg),
@@ -197,7 +205,8 @@ export const sendMessage = (dialogId, text) => {
                     lastName: userData.data().lastName,
                     img: userData.data().avatar || null,
                     text: typeof(text) === 'string' ? simpleCrypto.encrypt(text) : null,
-                    images: typeof(text) !== 'string' ? text : null,
+                    images: typeof(text) !== 'string' && type !== 'docs' ? text : null,
+                    files: typeof(text) !== 'string' && type !== 'images' ? text : null,
                     createdAt: lastUpdate,
                     viewed: false
                 }).then(() => {
@@ -209,28 +218,41 @@ export const sendMessage = (dialogId, text) => {
     }
 }
 
-export const onUploadSubmission = (dialogId, files) => {
+export const onUploadSubmission = (dialogId, files, type) => {
 
     return (dispatch) => {
 
         const promises = [];
         const fileURL = [];
 
-        files.forEach(file => {
+        var uploadProgress = []
 
+        files.forEach((file, i) => {
+            
          const uploadTask = firebase.storage().ref().child(`messages/${file.name}`).put(file);
             promises.push(uploadTask);
             uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, snapshot => {
             
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                const progress = (100 * snapshot.bytesTransferred / snapshot.totalBytes) ;
                    if (snapshot.state === firebase.storage.TaskState.RUNNING) {
-                    console.log(`Progress: ${progress}%`);
+                    uploadProgress[i] = progress
+                    
+                    var total = uploadProgress.reduce(function(a,b) {
+                        return (+a)+(+b);
+                    });
+
+                    dispatch(setUploadProgress(total / files.length))
                    }
                  },
                  error => console.log(error.code),
                  async () => {
                    const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-                   fileURL.push(downloadURL)
+                   if(type === 'docs'){
+                    fileURL.push({[file.name]: downloadURL})
+                   }else {
+                    fileURL.push(downloadURL)
+                   }
+                   
                   }
                  );
                });
@@ -238,7 +260,7 @@ export const onUploadSubmission = (dialogId, files) => {
             .then(() => {
                 console.log('All files uploaded')
                 console.log(typeof(fileURL), fileURL)
-                dispatch (sendMessage(dialogId, fileURL))
+                dispatch (sendMessage(dialogId, fileURL, type))
             })
             .catch(err => console.log(err.code));
     }

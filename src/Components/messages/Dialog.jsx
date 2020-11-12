@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import SimpleCrypto from "simple-crypto-js"
 import moment from 'moment';
 import Resizer from "react-image-file-resizer"
+import * as JSZip from 'jszip';
 
 import { getDialogData, sendMessage, checkView, stopPreviousData, onUploadSubmission } from '../../redux/messagesReducer'
 import Messages from './Messages';
@@ -12,6 +13,8 @@ import './dialog.scss'
 import profile from './../../images/profile.png'
 import send from './../../images/send.svg'
 import images from './../../images/images.svg'
+import clip from './../../images/clip.svg'
+import download from './../../images/download.svg'
 
 
 const Dialog = React.memo((props) => {
@@ -20,8 +23,11 @@ const Dialog = React.memo((props) => {
     
     const [message, setMessage] = useState(null)
     const [files, setFiles] = useState([])
+    const [docs, setDocs] = useState([])
     const [preview, setPreview] = useState([])
+    const [docPreview, setDocPreview] = useState([])
     const [active, setActive] = useState(null)
+
 
     useEffect(() => {
         props.getDialogData(dialogId);
@@ -40,16 +46,22 @@ const Dialog = React.memo((props) => {
         }
     }, [props.dialogData]);
 
-    const sendMessage = useCallback(() => {
+    const sendMessage = () => {
+        console.log(files, docs)
         if((textarea.current.value).trim() !== ''){
             props.sendMessage(dialogId, message)
             textarea.current.value = ''
         }
         if(files.length > 0){
-            props.onUploadSubmission(dialogId, files)
+            props.onUploadSubmission(dialogId, files, 'images')
         } 
+        if(docs.length > 0){
+            props.onUploadSubmission(dialogId, docs, 'docs')
+        }
         setPreview([])
-    },[])
+        setFiles([])
+        setDocs([])
+    }
 
     const onCLick = (e) => {
         e.preventDefault();
@@ -109,7 +121,7 @@ const Dialog = React.memo((props) => {
         return simpleCrypto.decrypt(text)
     }
 
-    const onFileChange = e => {
+    const imageUpload = e => {
         var previewImg = [];
         var arr = []
         for (let i = 0; i < e.target.files.length; i++) {
@@ -143,6 +155,17 @@ const Dialog = React.memo((props) => {
 
     };
 
+    const fileUpload = (e) => {
+        var arr = [];
+        
+        for (let i = 0; i < e.target.files.length; i++) {
+            const newFile = e.target.files[i];
+            newFile["id"] = Math.random();
+            arr.push(newFile)
+        }
+        setDocs(arr); 
+    }
+
     const dateLine = (i, previ) => {
 
         var today = new Date() 
@@ -173,10 +196,16 @@ const Dialog = React.memo((props) => {
     }
 
     const handleView = (e) => {
-        console.log(e.target.src)
         setActive(e.target.src)
     }
-    
+
+    const getFileExtension = (file) => {
+        var name = Object.keys(file)[0]
+        var ext = name.split('.').pop()
+
+        return ext
+    }
+
     return (
         <div className='flexbox messages-wrap'>
             <Messages />
@@ -207,11 +236,25 @@ const Dialog = React.memo((props) => {
                            {value.text ? <div className="dialog_message">{decryptText(value.text, value.createdAt)}</div> : null} 
                         
                             {value.images ? <div className='dialog_images'>
-                            {Object.keys(value.images).map(img => (
-                                <div className={"dialog_image " + (value.images[img] === active ? 'selected' : null)} onClick={handleView}>
-                                <img src={value.images[img]} /> 
+                            {value.images.map(img => (
+                                <div className={"dialog_image " + (img === active ? 'selected' : null)} onClick={handleView}>
+                                <img src={img} /> 
                                 </div>
                             ))}
+                            </div>:null}
+
+                            {value.files ? <div className='dialog_files'>
+                            {value.files.map(value => <div className="dialog_file">
+                                <span className="dialog_file-name">
+                                <div className="dialog_file-ext">
+                                    {getFileExtension(value)}
+                                </div>
+                                {Object.keys( value )[0]}
+                                </span>
+                                <a href={Object.values( value )[0]} >
+                                    <img src={download} />
+                                </a>
+                            </div> )}
                             </div>:null}
                         </div>
                        
@@ -232,11 +275,19 @@ const Dialog = React.memo((props) => {
                     </div>
                  :null}
 
+                
                 <div className="dialog_buttons">
+                    {props.uploadProgress ? <div className="upload-progress" style={{width: (props.uploadProgress) + '%'}}></div>  : null} 
                     <label htmlFor="images">
                         <img src={images} />
                     </label>
-                    <input id="images" type="file" multiple accept="image/*" onChange={onFileChange} />
+                    <input id="images" type="file" multiple accept="image/*" onChange={imageUpload} />
+                    <label htmlFor="doc">
+                        <img src={clip} />
+                    </label>
+                    <input id="doc" type="file" multiple onChange={fileUpload} />
+                    <div>
+                    </div>
                 </div>
                 <form> 
                     <textarea placeholder="type something..." ref={textarea} onKeyDown={onKeyDown} onFocus={toggleTyping} onChange={handleMessage} />
@@ -262,7 +313,8 @@ let mapStateToProps = (state) => {
     return {
         authId: state.auth.id,
         dialogData: state.messages.dialogData,
-        dialogs: state.messages.dialogsList
+        dialogs: state.messages.dialogsList,
+        uploadProgress: state.messages.uploadProgress
     }
 }
 

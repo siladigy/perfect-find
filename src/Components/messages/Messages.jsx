@@ -10,7 +10,7 @@ import profile from './../../images/profile.png'
 
 import notification from './../../sounds/notification.mp3'
 
-const Messages = (props) => {
+const Messages = React.memo((props) => {
 
     const dialogId = props.match.params.dialogId;
 
@@ -96,7 +96,7 @@ const Messages = (props) => {
             </TransitionGroup>
         </div>
     )
-}
+})
 
 let ProjectWithRouter = withRouter(Messages)
 

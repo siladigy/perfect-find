@@ -110,6 +110,38 @@
             }
         }
 
+        .dialog_file{
+            border: 1px solid rgb(209, 208, 208);
+            background: #fff;
+            padding-left: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            
+            .dialog_file-name{
+                max-width: 200px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                display: flex;
+                align-items: center;
+
+                .dialog_file-ext{
+                    background: #00bcd4;
+                    color: #fff;
+                    padding: 5px 10px;
+                    border-radius: 10px;
+                    margin-right: 5px;
+                }
+            }
+
+            img{
+                padding-left: 10px;
+                border-left: 1px solid rgb(209, 208, 208);
+                width: 50px;
+            }
+        }
+
         .dialog_message{
             display: inline-block;
             background: #fff;
@@ -204,8 +236,9 @@
         border-bottom: 1px solid rgba(0, 0, 0, 0.144);
 
         label img{
-            width: 50px;
-            height: 50px;
+            width: 20px;
+            height: 20px;
+            margin: 10px;
             cursor: pointer;
         }
 
@@ -257,6 +290,11 @@
             }
         }
     }
+}
+.upload-progress{
+    height: 5px;
+    transition: .5s;
+    background: red;
 }
 
 .loader{
@@ -335,3 +373,7 @@
     }
   }
   
+.emoji-picker-react{
+    position: absolute !important;
+    bottom: 50px;
+}
