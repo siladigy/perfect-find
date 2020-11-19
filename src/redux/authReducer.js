@@ -30,7 +30,7 @@ const authReducer = (state = initialState, action) => {
         case USER_NAME:
             return {
                 ...state,
-                name: action.data
+                name: action.name + " " + action.surname
             }
         case USER_PHOTO:
             return {
@@ -60,7 +60,7 @@ const authReducer = (state = initialState, action) => {
 
 
 export const setUser = (bool) => ({ type: SET_USER, data : bool })
-export const userName = (name) => ({ type: USER_NAME, data : name })
+export const userName = (name, surname) => ({ type: USER_NAME, name, surname })
 export const userPhoto = (url) => ({ type: USER_PHOTO, data : url })
 export const userId = (id) => ({ type: USER_ID, data : id })
 export const catchError = (errCode, errMessage) => ({ type: CATCH_ERROR, code : errCode, message: errMessage })
@@ -114,8 +114,6 @@ export const authState = () => {
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
               dispatch (setUser(true))
-              dispatch (userName(user.displayName))
-              dispatch (userPhoto(user.photoURL))
               dispatch (userId(user.uid))
             } else {
                 dispatch (setUser(false))
@@ -177,13 +175,13 @@ export const getUserData = () => {
         var user = firebase.auth().currentUser;
         const db = firebase.firestore();
 
-        const users = await db.collection("users").get()
         if(user) {
-            users.docs.map(item => {
-                if(item.id === user.uid){
-                    dispatch (userPhoto(item.data().avatar))
-                }
-            })
+            const users = db.collection("users").doc(user.uid)
+            const data = await users.get()
+
+            dispatch (userPhoto(data.data().avatar))
+            dispatch (userName(data.data().firstName, data.data().lastName))
+
         }
     }
 }

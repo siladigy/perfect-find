@@ -1,112 +1,65 @@
-.header-wrapper{
+.sidebar_wrapper{
+    height: 100vh;
+    width: 100%;
+    background: rgb(44, 2, 71);
     position: fixed;
-    width: 20%;
-    height: 100%;
-    right: 0;
-    background: linear-gradient(45deg, #000000, #6b097d);
-    color: #fff;
-    padding: 20px 0;
-    z-index: 99;
 
-    .header-account{
-        position: relative;
-        width: 100%;
+    .sidebar_inner{
+        width: 250px;
+        padding: 20px;
 
-        .header-avatar{
-            position: relative;
-            left: 0;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: #fff;
-            margin: 0 auto;
+        .sidebar_logo{
+            margin-top: 50px;
+            color: #fff;
+            font-size: 30px;
+            text-align: center;
+        }
+
+        .sidebar_profile{
+            margin-top: 50px;
+            display: flex;
+
+            .profile_name{
+                margin-top: 10px;
+                margin-left: 10px;
+                color: #fff;
+                text-transform: capitalize;
+            }
 
             img{
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;     
-                border-radius: 50%;
+                width: 100px;
+                height: 100px;
+                border-radius: 10px;
+                border: 5px solid rgba(255, 255, 255, 0.171);
                 object-fit: cover;
             }
+        }
 
-            input{
-                display: none;
-            }
+        .sidebar_linklist{
+            display: flex;
+            margin-top: 50px;
+            flex-direction: column;
+            justify-content: center;
 
-            label{
-                position: absolute;
-                bottom: 10px;
-                right: 10px;
-                width: 30px;
-                height: 30px;
-                border-radius: 10%;
+            a{
+                background: rgba(255, 255, 255, 0.123);
+                color: #fff;
+                text-transform: capitalize;
+                font-size: 20px;
+                border-radius: 10px;
                 display: flex;
-                justify-content: center;
                 align-items: center;
-                background: #eae9e9;
-                cursor: pointer;
+                padding: 20px;
+
+                &.active{
+                    background:#673ab7;
+                }
 
                 img{
-                    width: 100%;
-                    height: 100%;
-                    padding: 7px;
-                }
-            }
-        }
-
-        .header-account-account{
-            position: relative;
-            float: right;
-            padding-right: 15px;
-            cursor: pointer;
-            text-transform: uppercase;
-
-            &:after{
-                content: "";
-                display: block;
-                top: 20%;
-                right: 0;
-                position: absolute;
-                width: 5px;
-                height: 5px;
-                border-right: 1px solid #fff;
-                border-bottom: 1px solid #fff;
-                transform: rotate(45deg);
-            }
-
-            .header-account__dropdown{
-                position: absolute;
-                background: #1e1e1c9e;
-                width: 200px;
-                left: 0;
-                padding: 20px;
-            
-
-                li{
-                    list-style: none;
+                    width: 30px;
+                    margin-right: 20px;
                 }
             }
         }
     }
-
-    .login{
-        margin-right: 20px;
-    }
-
-    .logo-letters{
-        position: absolute;
-        font-size: 300px;
-        bottom: 0;
-        left: 10%;
-        font-weight: 800;
-        color: #030632;
-        text-shadow: 5px 1px 5px #0000005c;
-    }
-
-    .add_new_project{
-        margin-top: 50px;
-    }
-    
 }

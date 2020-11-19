@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "cra-template": "1.0.3",
-    "emoji-picker-react": "^3.2.4",
     "firebase": "^7.19.1",
     "firebase-tools": "^8.9.2",
     "jszip": "^3.5.0",

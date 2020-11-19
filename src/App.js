@@ -11,14 +11,15 @@ import Sidebar from './Components/sidebar/Sidebar';
 import Logo from './Components/logo/Logo';
 import Messages from './Components/messages/Messages';
 import Dialog from './Components/messages/Dialog';
+import Splash from './Components/splash/Splash';
 
 const App = () => {  
 
 return (
   <BrowserRouter>
+    <Splash /> 
     <Sidebar />
     <div className="main">
-    <Logo />
     <Route exact path="/" component={Home} />
     <Route exact path="/login" component={Login}/>
     <Route exact path="/project/:projectId?" component={ProjectDetail}/>

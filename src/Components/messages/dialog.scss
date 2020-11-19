@@ -1,11 +1,25 @@
 .messages-wrap{
-    height: calc(100vh - 120px);
+    height: 100vh;
+    background: linear-gradient(144deg, #9f9ef552, #f3e8e8);
 }
 .dialog-window{
     position: relative;
+    margin: 20px;
+    margin-left: 0;
     width: 100%;
-    height: 100%;
-    background: #e2e5f31f;
+    background: #fff;
+
+    &:before{
+        content: "";
+        position: absolute;
+        display: block;
+        left: 0;
+        top: 0;
+        background: linear-gradient(#fff, transparent);
+        width: 100%;
+        height: 50px;
+        z-index: 3;
+    }
 
     .dateLine{
         position: relative;
@@ -38,6 +52,7 @@
     }
 
     .dialogs-wrap{
+        position: relative;
         overflow: scroll;
         height: calc(100% - 150px);
         padding: 10px 50px;
@@ -69,6 +84,7 @@
                 border-radius: 50px;
                 width: 30px;
                 height: 30px;
+                object-fit: cover;
             }
         }
        
@@ -144,7 +160,7 @@
 
         .dialog_message{
             display: inline-block;
-            background: #fff;
+            background: #ff9800a6;
             padding: 15px;
             white-space: pre-line;
             border-radius: 10px;
@@ -175,7 +191,7 @@
                 }
 
                 .dialog_message{
-                    background: linear-gradient(45deg, #2196F3, #00d499);
+                    background: #864dac;
                     color: #fff;
                     border-radius: 10px 10px 0;
                     box-shadow: -5px 5px 10px #80808040;
@@ -197,6 +213,13 @@
         bottom: 150px;
         background: #4c4a4ab8;
         width: 100%;
+
+        .file-preview{
+            margin: 20px 0;
+            margin-left: 15px;
+            padding: 5px 15px;
+            background: #fff;
+        }
 
         span{
             position: relative;
@@ -279,14 +302,15 @@
             height: 60px;
             background: #fff;
             padding: 10px;
-            border-radius: 100%;
-            border-color: #9c09b7;
+            border: none;
             outline: none;
             cursor: pointer;
 
             img{
+                position: relative;
                 width: 100%;
                 height: 100%;
+                z-index: 3;
             }
         }
     }

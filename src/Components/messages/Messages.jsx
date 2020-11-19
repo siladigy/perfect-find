@@ -63,7 +63,7 @@ const Messages = React.memo((props) => {
 
     const decryptText = (text, key) => {
         var simpleCrypto = new SimpleCrypto(key)
-        var res = simpleCrypto.decrypt(text) == 'sent images' ? <i>{simpleCrypto.decrypt(text)}</i> : simpleCrypto.decrypt(text)
+        var res = simpleCrypto.decrypt(text) == 'sent images' || simpleCrypto.decrypt(text) == 'sent files' ? <i>{simpleCrypto.decrypt(text)}</i> : simpleCrypto.decrypt(text)
         return res
     }
 

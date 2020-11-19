@@ -164,6 +164,7 @@ const Dialog = React.memo((props) => {
             arr.push(newFile)
         }
         setDocs(arr); 
+        console.log(arr)
     }
 
     const dateLine = (i, previ) => {
@@ -264,12 +265,18 @@ const Dialog = React.memo((props) => {
                      <div ref={messagesEndRef} />
                 </div>
 
-                 {preview.length > 0 ?
+                 {preview.length > 0 || docs.length > 0 ?
                     <div className="preview">
                         {preview.map((data) => 
                         <span>
                             <div id={data} className="preview__remove" onClick={removeFromAdding}>&#215;</div>
                             <img src={data} />
+                        </span>
+                        )}
+                        {docs.map((file) => 
+                        <span>
+                            <div id={file.id} className="preview__remove" onClick={removeFromAdding}>&#215;</div>
+                            <div className='file-preview'>{file.name}</div>
                         </span>
                         )}
                     </div>
