@@ -99,15 +99,16 @@ const Dialog = React.memo((props) => {
        
         if (previ && i.id !== previ.id || previ && i.createdAt - previ.createdAt > 60000) {
             group = 'frst'
+        } else if(first.createdAt == i.createdAt){
+            group = 'frst'
         } else if(nexti && i.id !== nexti.id || nexti && nexti.createdAt - i.createdAt > 60000) {
             group = 'lst'
-        } else if(last.createdAt == i.createdAt && i.id == previ.id && i.createdAt - previ.createdAt < 60000){
+        } else if(last.createdAt == i.createdAt && previ && i.id == previ.id && i.createdAt - previ.createdAt < 60000){
             group = 'lst'
-        }
+        } 
 
         return group ? group : ''
-        
-        
+          
     }
 
     return (
