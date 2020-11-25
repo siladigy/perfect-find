@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import SimpleCrypto from "simple-crypto-js"
 import moment from 'moment';
-import Resizer from "react-image-file-resizer"
 import * as JSZip from 'jszip';
 
 import { getDialogData, sendMessage, checkView, stopPreviousData, onUploadSubmission } from '../../redux/messagesReducer'
@@ -11,21 +10,14 @@ import Messages from './Messages';
 
 import './dialog.scss'
 import profile from './../../images/profile.png'
-import send from './../../images/send.svg'
-import images from './../../images/images.svg'
-import clip from './../../images/clip.svg'
 import download from './../../images/download.svg'
+import Textarea from './Textarea';
 
 
 const Dialog = React.memo((props) => {
     
     var dialogId = props.match.params.dialogId;
-    
-    const [message, setMessage] = useState(null)
-    const [files, setFiles] = useState([])
-    const [docs, setDocs] = useState([])
-    const [preview, setPreview] = useState([])
-    const [docPreview, setDocPreview] = useState([])
+        
     const [active, setActive] = useState(null)
 
 
@@ -37,7 +29,6 @@ const Dialog = React.memo((props) => {
     },[dialogId]);
 
     const messagesEndRef = useRef(null)
-    const textarea = useRef(null)
 
     useEffect(() => {
         props.checkView(dialogId);
@@ -45,45 +36,6 @@ const Dialog = React.memo((props) => {
             messagesEndRef.current.scrollIntoView()
         }
     }, [props.dialogData]);
-
-    const sendMessage = () => {
-        console.log(files, docs)
-        if((textarea.current.value).trim() !== ''){
-            props.sendMessage(dialogId, message)
-            textarea.current.value = ''
-        }
-        if(files.length > 0){
-            props.onUploadSubmission(dialogId, files, 'images')
-        } 
-        if(docs.length > 0){
-            props.onUploadSubmission(dialogId, docs, 'docs')
-        }
-        setPreview([])
-        setFiles([])
-        setDocs([])
-    }
-
-    const onCLick = (e) => {
-        e.preventDefault();
-        sendMessage();
-    }
-
-    const onKeyDown = (e) => {
-        if(e.keyCode == 13 && e.shiftKey == false) {
-            e.preventDefault();
-            sendMessage();
-        }
-    }
-
-    const handleMessage = (e) => {
-        setMessage(e.target.value)
-    }
-
-    const toggleTyping = (e) => {
-        if (e.target.value !== '') {
-            console.log(true)
-        }
-    }
 
     const convertTime = (number) => {
 
@@ -106,66 +58,12 @@ const Dialog = React.memo((props) => {
         return moment(number).fromNow() 
     }
 
-    const getHeaderData = (data) => {
-        var user;
-        data.author.id !== props.authId ? user = 'author' : user = 'interlocutor'
-
-        return  (
-            <img src={data[user].img ? data[user].img : profile} />
-        )
-    }
-
     const decryptText = (text, key) => {
         var simpleCrypto = new SimpleCrypto(key)
 
         return simpleCrypto.decrypt(text)
     }
 
-    const imageUpload = e => {
-        var previewImg = [];
-        var arr = []
-        for (let i = 0; i < e.target.files.length; i++) {
-            const newFile = e.target.files[i];
-            const size = newFile.size/1024
-            newFile["src"] = URL.createObjectURL(e.target.files[i])
-            newFile["id"] = Math.random();
-            previewImg.push(newFile["src"])
-            if (size > 300) {
-                Resizer.imageFileResizer(newFile, 500, 500, "JPEG", 100, 0, (uri) => {
-
-                    function blobToFile(theBlob, fileName){
-                        theBlob.lastModifiedDate = new Date();
-                        theBlob.name = fileName;
-                        theBlob.id = newFile["id"];
-                        theBlob.src = newFile["src"];
-                        return theBlob;
-                    }
-
-                    var myFile = blobToFile(uri, newFile.name);
-                    arr.push(myFile)
-                    
-                }, 'blob')
-            } else {
-                arr.push(newFile)
-            }
-              
-        }
-        setFiles(arr); 
-        setPreview(previewImg);
-
-    };
-
-    const fileUpload = (e) => {
-        var arr = [];
-        
-        for (let i = 0; i < e.target.files.length; i++) {
-            const newFile = e.target.files[i];
-            newFile["id"] = Math.random();
-            arr.push(newFile)
-        }
-        setDocs(arr); 
-        console.log(arr)
-    }
 
     const dateLine = (i, previ) => {
 
@@ -185,17 +83,6 @@ const Dialog = React.memo((props) => {
   
     }
 
-    const removeFromAdding = (evt) => {
-        var prev = [...preview]
-        var arr = [...files]
-
-        arr = arr.filter(e => e.src !== evt.target.id )
-        prev = prev.filter(e => e !== evt.target.id )
-
-        setPreview(prev)
-        setFiles(arr)
-    }
-
     const handleView = (e) => {
         setActive(e.target.src)
     }
@@ -207,33 +94,40 @@ const Dialog = React.memo((props) => {
         return ext
     }
 
+    const checkGroup = (first, last, i, previ, nexti) => {
+        var group = null
+       
+        if (previ && i.id !== previ.id || previ && i.createdAt - previ.createdAt > 60000) {
+            group = 'frst'
+        } else if(nexti && i.id !== nexti.id || nexti && nexti.createdAt - i.createdAt > 60000) {
+            group = 'lst'
+        } else if(last.createdAt == i.createdAt && i.id == previ.id && i.createdAt - previ.createdAt < 60000){
+            group = 'lst'
+        }
+
+        return group ? group : ''
+        
+        
+    }
+
     return (
         <div className='flexbox messages-wrap'>
             <Messages />
             <div className='dialog-window'>
                 {props.dialogData ? <>
-                {/* <div className="dialog-header">
-                    {props.dialogs ? props.dialogs.map((data, index) => <>
-                        {data.messageId === dialogId ? <div>
-                            {getHeaderData(data)}
-                        </div>
-                        :null}
-                        </>
-                    ) : null}
-                </div> */}
+
                 <div className="dialogs-wrap">
                     {props.dialogData ? props.dialogData.map((value, i) => 
                     <>
                     {props.dialogData[i-1] ? dateLine(props.dialogData[i].createdAt, props.dialogData[i-1].createdAt) : null}
 
-                    <div className={"dialog " + (props.authId === value.id ? 'me' : 'not')}>
+                    <div className={"dialog " + (props.authId === value.id ? 'me ' : 'not ') + checkGroup(props.dialogData[0], props.dialogData[props.dialogData.length - 1], props.dialogData[i], props.dialogData[i-1], props.dialogData[i+1] ) }>
 
                         <div className="dialog_img">
                             <img src={value.img ? value.img : profile} />
                         </div>
-                     
                         <div className="dialog_text">
-                            <div className="dialog_time">{convertTime(value.createdAt)}</div> 
+                        <div className="dialog_time">{convertTime(value.createdAt)}</div> 
                            {value.text ? <div className="dialog_message">{decryptText(value.text, value.createdAt)}</div> : null} 
                         
                             {value.images ? <div className='dialog_images'>
@@ -260,48 +154,14 @@ const Dialog = React.memo((props) => {
                         </div>
                        
                     </div>
+                   
                     </>
                     ): null}
                      <div ref={messagesEndRef} />
                 </div>
 
-                 {preview.length > 0 || docs.length > 0 ?
-                    <div className="preview">
-                        {preview.map((data) => 
-                        <span>
-                            <div id={data} className="preview__remove" onClick={removeFromAdding}>&#215;</div>
-                            <img src={data} />
-                        </span>
-                        )}
-                        {docs.map((file) => 
-                        <span>
-                            <div id={file.id} className="preview__remove" onClick={removeFromAdding}>&#215;</div>
-                            <div className='file-preview'>{file.name}</div>
-                        </span>
-                        )}
-                    </div>
-                 :null}
-
+                <Textarea dialogId={dialogId} />
                 
-                <div className="dialog_buttons">
-                    {props.uploadProgress ? <div className="upload-progress" style={{width: (props.uploadProgress) + '%'}}></div>  : null} 
-                    <label htmlFor="images">
-                        <img src={images} />
-                    </label>
-                    <input id="images" type="file" multiple accept="image/*" onChange={imageUpload} />
-                    <label htmlFor="doc">
-                        <img src={clip} />
-                    </label>
-                    <input id="doc" type="file" multiple onChange={fileUpload} />
-                    <div>
-                    </div>
-                </div>
-                <form> 
-                    <textarea placeholder="type something..." ref={textarea} onKeyDown={onKeyDown} onFocus={toggleTyping} onChange={handleMessage} />
-                    <button type="submit" onClick={onCLick}>
-                        <img src={send} alt=""/>
-                    </button>
-                </form>
                  </> : 
                  <div className="loader">
                      <div className="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
@@ -320,16 +180,13 @@ let mapStateToProps = (state) => {
     return {
         authId: state.auth.id,
         dialogData: state.messages.dialogData,
-        dialogs: state.messages.dialogsList,
-        uploadProgress: state.messages.uploadProgress
+        dialogs: state.messages.dialogsList
     }
 }
 
 
 export default connect(mapStateToProps, {
     getDialogData,
-    sendMessage,
     checkView,
-    stopPreviousData,
-    onUploadSubmission
+    stopPreviousData
 })(ProjectWithRouter);

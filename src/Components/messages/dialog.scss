@@ -4,22 +4,9 @@
 }
 .dialog-window{
     position: relative;
-    margin: 20px;
-    margin-left: 0;
+    margin-right: 20px;
     width: 100%;
     background: #fff;
-
-    &:before{
-        content: "";
-        position: absolute;
-        display: block;
-        left: 0;
-        top: 0;
-        background: linear-gradient(#fff, transparent);
-        width: 100%;
-        height: 50px;
-        z-index: 3;
-    }
 
     .dateLine{
         position: relative;
@@ -32,22 +19,6 @@
             position: relative;
             padding: 10px 30px;
             z-index: 2;
-        }
-
-        &:before,
-        &:after{
-            content: '';
-            position: absolute;
-            display: block;
-            height: 1px;
-            width: 40%;
-            left: 0;
-            top: 50%;
-            background: #000;
-        }
-        &:after{
-            left: auto;
-            right: 0;
         }
     }
 
@@ -74,11 +45,12 @@
 
     .dialog{
         display: flex;
-        padding: 20px 0;
+        padding: 1px 0;
 
         .dialog_img{
             display: flex;
             align-items: flex-end;
+            visibility: hidden;
 
             img{
                 border-radius: 50px;
@@ -164,13 +136,14 @@
             padding: 15px;
             white-space: pre-line;
             border-radius: 10px;
-            border-radius: 10px 10px 10px 0;
+            border-radius: 5px 10px 10px 5px;
             box-shadow: 5px 5px 10px #80808040;
         }
 
         .dialog_time{
             color: #00000045;
             font-size: 13px;
+            display: none;
         }
 
         &.me{
@@ -193,16 +166,50 @@
                 .dialog_message{
                     background: #864dac;
                     color: #fff;
-                    border-radius: 10px 10px 0;
+                    border-radius: 15px 5px 5px 15px;
                     box-shadow: -5px 5px 10px #80808040;
                 }
 
                 .dialog_time{
-                    display: flex;
                     justify-content: flex-end;
                 }
             }
            
+        }
+
+        &.frst{
+            padding-top: 20px;
+
+            .dialog_time{
+                display: flex;
+                margin-bottom: 5px;
+            }
+
+            .dialog_img{
+                visibility: visible;
+            }
+
+            .dialog_message{
+                border-radius: 15px 15px 15px 0;
+            }
+
+            &.me{
+                .dialog_message{
+                    border-radius: 15px 15px 0 15px;
+                }
+            }
+        }
+        &.lst{
+
+            .dialog_message{
+                border-radius: 0 15px 15px 15px;
+            }
+
+            &.me{
+                .dialog_message{
+                    border-radius: 15px  0 15px 15px;
+                }
+            }
         }
     }
 

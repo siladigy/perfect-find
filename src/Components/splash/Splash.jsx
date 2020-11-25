@@ -6,7 +6,7 @@ const Splash = () => {
 
     const [title, setTitle] = useState(false) 
     const [wrap, setWrap] = useState(true) 
-    const [splash, setSplash] = useState(true) 
+    const [splash, setSplash] = useState(false) 
 
     useEffect(() => {
         setTimeout(() => {
