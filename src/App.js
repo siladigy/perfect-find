@@ -12,6 +12,7 @@ import Logo from './Components/logo/Logo';
 import Messages from './Components/messages/Messages';
 import Dialog from './Components/messages/Dialog';
 import Splash from './Components/splash/Splash';
+import Contacts from './Components/contacts/Contacts';
 
 const App = () => {  
 
@@ -27,6 +28,7 @@ return (
     <Route exact path="/add-project" component={AddProject} />
     <Route exact path="/messages" component={Messages} />
     <Route exact path="/message/:dialogId?" component={Dialog} />
+    <Route exact path="/contacts" component={Contacts} />
   
     </div>
   </BrowserRouter>

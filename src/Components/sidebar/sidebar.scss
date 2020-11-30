@@ -1,12 +1,14 @@
 .sidebar_wrapper{
     height: 100vh;
     width: 100%;
-    background: rgb(44, 2, 71);
+    background: #190128;
     position: fixed;
 
     .sidebar_inner{
+        position: relative;
         width: 250px;
         padding: 20px;
+        height: 100vh;
 
         .sidebar_logo{
             margin-top: 50px;
@@ -35,6 +37,21 @@
             }
         }
 
+        .sidebar_auth{
+            margin-top: 50px;
+            a{
+                color: #fff;
+                background: #673ab7;
+                padding: 15px 20px;
+                border: 2px solid #673ab7;
+
+                &:first-of-type{
+                    background: none;
+                    
+                }
+            }
+        }
+
         .sidebar_linklist{
             display: flex;
             margin-top: 50px;
@@ -58,6 +75,27 @@
                 img{
                     width: 30px;
                     margin-right: 20px;
+                }
+            }
+        }
+
+        .sidebar_logout{
+            position: absolute;
+            bottom: 50px;
+            button{
+                border: none;
+                padding: 5px 10px;
+                border-radius: 5px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                color: #fff;
+                font-size: 15px;
+                background: none;
+
+                img{
+                    width: 30px;
+                    margin-right: 10px;
                 }
             }
         }

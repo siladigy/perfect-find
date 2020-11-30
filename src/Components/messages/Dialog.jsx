@@ -3,9 +3,8 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import SimpleCrypto from "simple-crypto-js"
 import moment from 'moment';
-import * as JSZip from 'jszip';
 
-import { getDialogData, sendMessage, checkView, stopPreviousData, onUploadSubmission } from '../../redux/messagesReducer'
+import { getDialogData, checkView, stopPreviousData } from '../../redux/messagesReducer'
 import Messages from './Messages';
 
 import './dialog.scss'
@@ -19,7 +18,6 @@ const Dialog = React.memo((props) => {
     var dialogId = props.match.params.dialogId;
         
     const [active, setActive] = useState(null)
-
 
     useEffect(() => {
         props.getDialogData(dialogId);

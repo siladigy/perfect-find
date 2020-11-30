@@ -1,25 +1,38 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {authState} from './../../redux/authReducer'
 import { getProjectDetails, submitProposal, sendMessage } from '../../redux/projectDetailReducer'
 import { connect } from 'react-redux';
-import { Redirect, withRouter } from 'react-router-dom';
+import { NavLink, Redirect, withRouter } from 'react-router-dom';
 
-
+import './projectDetail.scss'
 const ProjectDetail = (props) => {
 
     const projectId = props.match.params.projectId;
     const time = props.projectData ? new Date(Math.abs(props.projectData.createdAt)).toString() : null
     const [proposal, setProposal] = useState(null)
     const [auth, setAuth] = useState(false)
+    const [success, setSuccess] = useState(false)
+
+    const textarea = useRef(null)
 
     useEffect(() => {
         props.getProjectDetails(projectId);
-        props.projectAuthorId === props.authId ? setAuth(true) : setAuth(false)
-    },[props.authState]);
+    },[]);
 
+    useEffect(() => {
+        props.projectAuthorId === props.authId ? setAuth(true) : setAuth(false)
+        console.log(props.projectAuthorId, props.authId)
+    },[props.projectData, props.projectAuthorId]);
+
+    
     const submitProposal = (e) => {
         e.preventDefault()
-        props.submitProposal(projectId, proposal)
+        if(proposal.trim() !== '') {
+            props.submitProposal(projectId, proposal)
+            textarea.current.value = ''
+            setSuccess(true)
+        }
+        
     }
 
     const handleProposal = (e) => {
@@ -38,12 +51,13 @@ const ProjectDetail = (props) => {
         <>
         {props.handleProposal ? <Redirect to={"/message/" + props.handleProposal} /> : null}
 
-        <div className="flexbox">
+        <div className="project-detail-wrap">
             {props.projectData && props.projectAuthor ? 
             <>
             <div className="project-info">
-                {time}
+                
                 <div className="project-title">{props.projectData.title}</div>
+                {time}
                 <div className="project-description">{props.projectData.description}</div>
 
                 <br/><br/>
@@ -62,16 +76,23 @@ const ProjectDetail = (props) => {
                 <div>
                 <h4>Send Proposal</h4>
                 <form onSubmit={submitProposal}>
-                <textarea cols="60" rows="10" onChange={handleProposal}></textarea>
-                <button type="submit" className="btn">Submit</button>
+                <textarea cols="60" rows="10" onChange={handleProposal} ref={textarea}></textarea>
+                <button type="submit" className={'btn ' + (success && 'success')}>{success ? 'Success' : 'Submit'}</button>
                 </form>
                 </div>  : null}
                 
             </div>
             <div className="client-info">
-                <h3>Client :</h3>
-                <div className="client-name">{props.projectAuthor.firstName} {props.projectAuthor.lastName}</div>
+                <div className="client-wrap">
                 <img width="70px" height="70px" src={props.projectAuthor.avatar} alt=""/>
+                <div className="client-name">{props.projectAuthor.firstName} {props.projectAuthor.lastName}</div>
+
+                <div className="client-buttons">
+                    <NavLink to='/'>View Profile</NavLink>
+                    <button>Connect</button>
+                </div>
+                </div>
+                
             </div>
             
             </>:null}
