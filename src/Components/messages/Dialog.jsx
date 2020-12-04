@@ -6,6 +6,7 @@ import moment from 'moment';
 
 import { getDialogData, checkView, stopPreviousData } from '../../redux/messagesReducer'
 import Messages from './Messages';
+import DailogHeader from './DailogHeader';
 
 import './dialog.scss'
 import profile from './../../images/profile.png'
@@ -114,6 +115,7 @@ const Dialog = React.memo((props) => {
             <Messages />
             <div className='dialog-window'>
                 {props.dialogData ? <>
+                <DailogHeader />
 
                 <div className="dialogs-wrap">
                     {props.dialogData ? props.dialogData.map((value, i) => 

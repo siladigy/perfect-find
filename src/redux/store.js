@@ -5,9 +5,9 @@ import allProjectsReducer from './allProjectsReducer';
 import projectDetailReducer from './projectDetailReducer';
 import messagesReducer from './messagesReducer';
 import contactsReducer from './contactsReducer';
+import phoneCallReducer from './phoneCallReducer';
 import thunkMiddleware from "redux-thunk";
-import { firebaseReducer } from 'react-redux-firebase'
-import { getFirebase } from 'react-redux-firebase'
+
  
 let reducers  = combineReducers({
     auth: authReducer,
@@ -15,7 +15,8 @@ let reducers  = combineReducers({
     allProjects: allProjectsReducer,
     projectDetail: projectDetailReducer,
     messages: messagesReducer,
-    contacts: contactsReducer
+    contacts: contactsReducer,
+    phoneCall: phoneCallReducer
 });
 
 let store = createStore(reducers, applyMiddleware(thunkMiddleware));
