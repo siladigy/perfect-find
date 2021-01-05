@@ -21,6 +21,7 @@ return (
   <BrowserRouter>
     <Splash /> 
     <Sidebar />
+    <Video />
     <div className="main">
     <Route exact path="/" component={Home} />
     <Route exact path="/login" component={Login}/>
@@ -30,7 +31,7 @@ return (
     <Route exact path="/messages" component={Messages} />
     <Route exact path="/message/:dialogId?" component={Dialog} />
     <Route exact path="/contacts" component={Contacts} />
-    <Route exact path="/video" component={Video} />
+    {/* <Route exact path="/video" component={Video} /> */}
   
     </div>
   </BrowserRouter>

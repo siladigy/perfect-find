@@ -76,7 +76,8 @@ export const register = (email, password, firstName, lastName) => {
 
             db.collection("users").doc(user.uid).set({
                 firstName: firstName,
-                lastName: lastName
+                lastName: lastName,
+                peerId: null
             })
         })
         .catch(function(error) {

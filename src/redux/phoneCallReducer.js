@@ -1,12 +1,16 @@
-// import * as firebase from 'firebase';
+import * as firebase from 'firebase';
 // import "firebase/storage";
 
 const SET_VIDEO_ACTIVE = 'SET_VIDEO_ACTIVE';
+const ACTIVATE_CALL = 'ACTIVATE_CALL';
+const SET_OTHER_ID = 'SET_OTHER_ID';
 
 
 
 let initialState = {
-    videoActive: false
+    videoActive: false,
+    activateCall: false,
+    otherId: null
 }  
 
 
@@ -18,6 +22,16 @@ const phoneCallReducer = (state = initialState, action) => {
                 ...state,
                 videoActive: action.data
             }
+        case ACTIVATE_CALL:
+            return {
+                ...state,
+                activateCall: action.data
+            }
+        case SET_OTHER_ID:
+            return {
+                ...state,
+                otherId: action.data
+            }
         default: 
             return state;
     }   
@@ -26,7 +40,38 @@ const phoneCallReducer = (state = initialState, action) => {
 
 
 export const setVideoActive = (bool) => ({ type: SET_VIDEO_ACTIVE, data : bool })
+export const activateCall = (bool) => ({ type: ACTIVATE_CALL, data : bool })
+export const setOtherId = (data) => ({ type: SET_OTHER_ID, data : data })
 
+export const getOtherId = (id) => {
+    return async (dispatch) => {
+        const db = firebase.firestore();
+
+        var data = db.collection("users").doc(id)
+        var peerId = await data.get()
+
+        dispatch (activateCall(true))
+        dispatch (setOtherId(peerId.data().peerId))
+
+        // return peerId.data().peerId
+    }
+}
+
+export const setPeerId = (id) => {
+    return (dispatch) => {
+        const db = firebase.firestore();
+
+        firebase.auth().onAuthStateChanged(function(data) {
+            if (data) {
+                const user = firebase.auth().currentUser 
+                console.log('peerId set')
+                db.collection("users").doc(user.uid).update({
+                    peerId: id
+                })
+            }
+        });
+    }
+}
 
 export const callanswer = (peercall, localVideo, remoteVideo) => {
 

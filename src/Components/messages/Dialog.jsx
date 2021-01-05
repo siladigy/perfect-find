@@ -19,6 +19,7 @@ const Dialog = React.memo((props) => {
     var dialogId = props.match.params.dialogId;
         
     const [active, setActive] = useState(null)
+    const [interlocutor, setInterlocutor] = useState(null)
 
     useEffect(() => {
         props.getDialogData(dialogId);
@@ -31,6 +32,7 @@ const Dialog = React.memo((props) => {
 
     useEffect(() => {
         props.checkView(dialogId);
+        getInterlocutorId()
         if(messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView()
         }
@@ -107,7 +109,34 @@ const Dialog = React.memo((props) => {
         } 
 
         return group ? group : ''
-          
+    }
+
+    const getInterlocutorId = () => {
+        
+        // if (props.dialogs) {
+        //     for (let i = 0; i < props.dialogs.length; i++) {
+        //         if (props.dialogs[i].messageId == dialogId) {
+                    
+        //             if (props.dialogs[i].author.id !== props.authId) {
+        //                 setInterlocutor(props.dialogs[i].author)
+        //             } else {
+        //                 setInterlocutor(props.dialogs[i].incterlocutor)
+        //             }
+                    
+        //             break
+        //         }
+        //     } 
+        // }
+
+        if (props.dialogData) {
+            for (let i = 0; i < props.dialogData.length; i++) {
+                if (props.dialogData[i].id !== props.authId) {
+                    setInterlocutor(props.dialogData[i])
+                    
+                    break
+                }
+            } 
+        }
     }
 
     return (
@@ -115,7 +144,7 @@ const Dialog = React.memo((props) => {
             <Messages />
             <div className='dialog-window'>
                 {props.dialogData ? <>
-                <DailogHeader />
+                <DailogHeader interlocutor={interlocutor} />
 
                 <div className="dialogs-wrap">
                     {props.dialogData ? props.dialogData.map((value, i) => 
