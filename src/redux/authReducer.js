@@ -6,6 +6,7 @@ const USER_NAME = 'USER_NAME';
 const USER_PHOTO = 'USER_PHOTO';
 const USER_ID = 'USER_ID';
 const CATCH_ERROR = 'CATCH_ERROR';
+const UPLOAD_PROGRESS = 'UPLOAD_PROGRESS';
 
 
 let initialState = {
@@ -15,7 +16,8 @@ let initialState = {
     hasAccount: false,
     name: '',
     photoUrl: '',
-    id: null
+    id: null,
+    avatarUploadProgress: false
 }  
 
 
@@ -52,6 +54,11 @@ const authReducer = (state = initialState, action) => {
                 passwordError: passErr,
                 error : err
             }
+        case UPLOAD_PROGRESS:
+            return {
+                ...state,
+                avatarUploadProgress: action.bool
+            }
         default: 
             return state;
     }   
@@ -65,6 +72,7 @@ export const userPhoto = (url) => ({ type: USER_PHOTO, data : url })
 export const userId = (id) => ({ type: USER_ID, data : id })
 export const catchError = (errCode, errMessage) => ({ type: CATCH_ERROR, code : errCode, message: errMessage })
 
+export const avatarUploadProgress = (bool) => ({type: UPLOAD_PROGRESS, bool: bool})
 
 export const register = (email, password, firstName, lastName) => {
     
@@ -143,6 +151,8 @@ export const updatePhoto = (file) => {
         const user = firebase.auth().currentUser;
         const db = firebase.firestore();
 
+        dispatch (avatarUploadProgress(true))
+
         const storageRef = firebase.storage().ref()
         const fileRef = storageRef.child(`avatars/${user.uid}`)
         await fileRef.put(file)
@@ -150,7 +160,6 @@ export const updatePhoto = (file) => {
         var imgUrl = await fileRef.getDownloadURL()
 
         var usersRef = db.collection('users').doc(user.uid)
-
         usersRef.get()
         .then((docSnapshot) => {
         
@@ -159,10 +168,14 @@ export const updatePhoto = (file) => {
         if (docSnapshot.exists) {
             usersRef.update({
                 avatar: imgUrl
+            }).then(() => {
+                dispatch (avatarUploadProgress(false))
             })
         } else {
             usersRef.set({
                 avatar: imgUrl
+            }).then(() => {
+                dispatch (avatarUploadProgress(false))
             })
         }
               

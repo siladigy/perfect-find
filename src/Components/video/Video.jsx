@@ -32,7 +32,7 @@ const Video = React.memo((props) => {
     },[]);
 
     useEffect(() => {
-        call()
+        // call()
     },[props.activateCall, props.otherId]);
 
    
@@ -51,14 +51,15 @@ const Video = React.memo((props) => {
     const call = () => {
         console.log('start call', props.otherId )
         if (props.activateCall) {
-            
+            setActiveCall(true)
             props.callToNode(props.otherId, peer, localVideoRef.current, remoteVideoRef.current)
         }
     }
 
     peer.on('disconnected', function() { 
         setActiveCall(false)
-
+        setIncomingCall(false)
+        setActiveCall(false)
     });
 
     const handleDropCall = () => {
@@ -66,9 +67,6 @@ const Video = React.memo((props) => {
         if (audio.current) {
             audio.current.pause()
         }
-        setIncomingCall(false)
-        setActiveCall(false)
-
     }
 
     const handleAcceptCall = () => {
@@ -76,6 +74,10 @@ const Video = React.memo((props) => {
         setIncomingCall(false)
         setActiveCall(true)
         callanswer()
+    }
+
+    const handleDestroyCall = () => {
+        peer.disconnect();
     }
 
     return (
@@ -102,7 +104,7 @@ const Video = React.memo((props) => {
                 <video ref={localVideoRef} autoPlay></video>
             </div>
             <div className="drop-call">
-                <img src={dropCall} onClick={handleDropCall} />
+                <img src={dropCall} onClick={handleDestroyCall} />
             </div>
         </div>
         
