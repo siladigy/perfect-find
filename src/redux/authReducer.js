@@ -8,6 +8,8 @@ const USER_ID = 'USER_ID';
 const CATCH_ERROR = 'CATCH_ERROR';
 const UPLOAD_PROGRESS = 'UPLOAD_PROGRESS';
 
+const localData = JSON.parse(localStorage.getItem('localData'))
+
 
 let initialState = {
     error: null,
@@ -87,6 +89,14 @@ export const register = (email, password, firstName, lastName) => {
                 lastName: lastName,
                 peerId: null
             })
+
+            var profileData = {
+                'avatar': null,
+                'firstName': firstName,
+                'lastName': lastName
+            }
+
+            localStorage.setItem('localData', JSON.stringify(profileData));
         })
         .catch(function(error) {
 
@@ -104,21 +114,34 @@ export const login = (email, password) => {
     
     return (dispatch) => {
         firebase.auth().signInWithEmailAndPassword(email, password)
-        .then(function() {
-            console.log('you logged in')
+        .then(async function() {
+            const user = firebase.auth().currentUser;
+            const db = firebase.firestore();
+
+            const users = db.collection("users").doc(user.uid)
+            const data = await users.get()
+
+            var profileData = {
+                'avatar': data.data().avatar,
+                'firstName': data.data().firstName,
+                'lastName': data.data().lastName
+            }
+
+            localStorage.setItem('localData', JSON.stringify(profileData));
+
         }).catch(function(error) {
 
             var errorCode = error.code;
             var errorMessage = error.message;
             dispatch(catchError(errorCode, errorMessage))
             
-          });
+        });
           
     }
 }
 
 export const authState = () => {
-    
+
     return (dispatch) => {
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
@@ -128,7 +151,6 @@ export const authState = () => {
                 dispatch (setUser(false))
             }
           });
-          
     }
 }
 
@@ -153,6 +175,16 @@ export const updatePhoto = (file) => {
 
         dispatch (avatarUploadProgress(true))
 
+        var successUpdate = async () => {
+            dispatch (avatarUploadProgress(false))
+
+            const users = db.collection("users").doc(user.uid)
+            const data = await users.get()
+
+            localData.avatar = data.data().avatar
+            localStorage.setItem('localData', JSON.stringify(localData));
+        }
+
         const storageRef = firebase.storage().ref()
         const fileRef = storageRef.child(`avatars/${user.uid}`)
         await fileRef.put(file)
@@ -160,8 +192,7 @@ export const updatePhoto = (file) => {
         var imgUrl = await fileRef.getDownloadURL()
 
         var usersRef = db.collection('users').doc(user.uid)
-        usersRef.get()
-        .then((docSnapshot) => {
+        usersRef.get().then((docSnapshot) => {
         
         dispatch(userPhoto(imgUrl)) 
 
@@ -169,13 +200,13 @@ export const updatePhoto = (file) => {
             usersRef.update({
                 avatar: imgUrl
             }).then(() => {
-                dispatch (avatarUploadProgress(false))
+                successUpdate()
             })
         } else {
             usersRef.set({
                 avatar: imgUrl
             }).then(() => {
-                dispatch (avatarUploadProgress(false))
+                successUpdate()
             })
         }
               
@@ -186,6 +217,17 @@ export const updatePhoto = (file) => {
 
 export const getUserData = () => {
     return async (dispatch) => {
+        if (localData) {
+            dispatch (userPhoto(localData.avatar))
+        } else {
+            dispatch (getUserDataFromServer())
+        }
+    }
+}
+
+export const getUserDataFromServer = () => {
+    console.log('server request')
+    return async (dispatch) => {
         var user = firebase.auth().currentUser;
         const db = firebase.firestore();
 
@@ -195,7 +237,6 @@ export const getUserData = () => {
 
             dispatch (userPhoto(data.data().avatar))
             dispatch (userName(data.data().firstName, data.data().lastName))
-
         }
     }
 }

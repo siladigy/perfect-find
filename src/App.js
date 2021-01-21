@@ -10,10 +10,11 @@ import ProjectDetail from './Components/projectDetail/ProjectDetail'
 import Sidebar from './Components/sidebar/Sidebar';
 import Logo from './Components/logo/Logo';
 import Messages from './Components/messages/Messages';
-import Dialog from './Components/messages/Dialog';
+import DialogWindow from './Components/messages/DialogWindow';
 import Splash from './Components/splash/Splash';
 import Contacts from './Components/contacts/Contacts';
 import Video from './Components/video/Video';
+import Header from './Components/header/Header';
 
 const App = () => {  
 
@@ -62,17 +63,22 @@ return (
     {checkPassword ? 
     <>
     <Splash /> 
-    <Sidebar />
     <Video />
+
+    <Header />
+    <div className="wrapper">
+    <Sidebar />
     <div className="main">
     <Route exact path="/" component={Home} />
     <Route exact path="/login" component={Login}/>
     <Route exact path="/project/:projectId?" component={ProjectDetail}/>
     <Route exact path="/register" component={Register} />
     <Route exact path="/add-project" component={AddProject} />
-    <Route exact path="/messages" component={Messages} />
-    <Route exact path="/message/:dialogId?" component={Dialog} />
+    {/* <Route exact path="/messages" component={Messages} /> */}
+    <Route exact path="/message/:dialogId?" component={DialogWindow} />
     <Route exact path="/contacts" component={Contacts} />
+    </div>
+
     {/* <Route exact path="/video" component={Video} /> */}
   
     </div>

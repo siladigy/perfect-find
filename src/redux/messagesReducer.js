@@ -4,6 +4,7 @@ import SimpleCrypto from "simple-crypto-js"
 
 const SET_DIALOGS = 'SET_DIALOGS';
 const SET_DIALOG_DATA = 'SET_DIALOG_DATA';
+const APPEND_DIALOG_DATA = 'APPEND_DIALOG_DATA';
 const SET_UPLOAD_PROGRESS = 'SET_UPLOAD_PROGRESS';
 
 
@@ -12,6 +13,7 @@ const _ = require('lodash')
 
 let initialState = {
     dialogsList: [],
+    firstDialogId: null,
     dialogData: null,
     uploadProgress: null
 }  
@@ -30,7 +32,8 @@ const messages = (state = initialState, action) => {
               
             return {
                 ...state,
-                dialogsList: _.sortBy(arr, ['lastUpdate']).reverse()
+                dialogsList: _.sortBy(arr, ['lastUpdate']).reverse(),
+                firstDialogId: ((_.sortBy(arr, ['lastUpdate']).reverse())[0]).messageId
             }
         case SET_DIALOG_DATA:
 
@@ -41,6 +44,23 @@ const messages = (state = initialState, action) => {
                 action.data.forEach(doc => {
                     arr.push(doc.data())
                     // Object.assign(obj, ({[doc.id]: doc.data()}));
+                });
+            } else {
+                arr = null
+            }
+
+
+            return {
+                ...state,
+                dialogData: arr ? arr.reverse() : arr
+            }
+        case APPEND_DIALOG_DATA:
+
+            var arr = [...state.dialogData]
+
+            if (action.data) {
+                action.data.forEach(doc => {
+                    arr.push(doc.data())
                 });
             } else {
                 arr = null
@@ -65,7 +85,10 @@ const messages = (state = initialState, action) => {
 
 export const setDialogs = (data) => ({ type: SET_DIALOGS, data : data })
 export const setDialogData = (data) => ({ type: SET_DIALOG_DATA, data : data })
+export const appendDialogData = (data) => ({ type: APPEND_DIALOG_DATA, data : data })
 export const setUploadProgress = (data) => ({ type: SET_UPLOAD_PROGRESS, data : data })
+
+var stopDialogsListListener;
 
 export const getDialogs = () => {
 
@@ -75,10 +98,10 @@ export const getDialogs = () => {
         firebase.auth().onAuthStateChanged(function(data) {
             if (data) {
                 const user = firebase.auth().currentUser 
-
+                
                 const query = db.collection('messages').where('users', 'array-contains', `${user.uid}`);
 
-                const observer = query.onSnapshot(data => {
+                query.onSnapshot(data => {
 
                 dispatch (setDialogs(data))
 
@@ -91,10 +114,20 @@ export const getDialogs = () => {
     }
 }
 
+export const stopDialogsList = () => {
+
+    return (dispatch) => {
+        if(stopDialogsListListener){
+            stopDialogsListListener()
+            
+            console.log('stop dialogs list listener')
+        }  
+    }
+}
+
 var stopDialogDataListener;
 
 export const getDialogData = (id) => {
-    console.log('get dialog data')
 
     return (dispatch) => {
         const db = firebase.firestore();
@@ -104,14 +137,20 @@ export const getDialogData = (id) => {
                 const user = firebase.auth().currentUser 
 
                 const checkQuery = db.collection('messages').doc(id)
+
+                // const dialogData = checkQuery.collection('dialog').orderBy("createdAt")
+                // const initData = await dialogData.get()
+
                 const checkQueryData = await checkQuery.get()
 
-                const query = db.collection('messages').doc(id).collection('dialog').orderBy('createdAt');
+                // dispatch (setDialogData(initData.docs))
+
+                const query = db.collection('messages').doc(id).collection('dialog').orderBy("createdAt", "desc").limit(20);
 
                 if (checkQueryData.data().users.includes(user.uid)) {
                     stopDialogDataListener = query.onSnapshot(data => {
-                        console.log(id)
             
+                        // dispatch (appendDialogData(data))
                         dispatch (setDialogData(data))
             
                     }, err => {

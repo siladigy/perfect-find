@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useSelector } from 'react';
 import { connect } from 'react-redux';
 import { NavLink , withRouter } from 'react-router-dom';
-import { getDialogs } from '../../redux/messagesReducer'
+import { getDialogs, stopDialogsList } from '../../redux/messagesReducer'
 import SimpleCrypto from "simple-crypto-js"
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
@@ -17,6 +17,7 @@ const Messages = React.memo((props) => {
     // const dialogsData = useSelector(state => state.messages.dialogData)
     
     useEffect(() => {
+        props.stopDialogsList();
         props.getDialogs();
     },[]);
 
@@ -64,7 +65,8 @@ const Messages = React.memo((props) => {
     const decryptText = (text, key) => {
         var simpleCrypto = new SimpleCrypto(key)
         var res = simpleCrypto.decrypt(text) == 'sent images' || simpleCrypto.decrypt(text) == 'sent files' ? <i>{simpleCrypto.decrypt(text)}</i> : simpleCrypto.decrypt(text)
-        return res
+
+        return res.toString()
     }
 
     return (
@@ -111,5 +113,6 @@ let mapStateToProps = (state) => {
 
 
 export default connect(mapStateToProps, {
-    getDialogs
+    getDialogs,
+    stopDialogsList
 })(ProjectWithRouter);

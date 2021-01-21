@@ -62,7 +62,7 @@ const Dialog = React.memo((props) => {
     const decryptText = (text, key) => {
         var simpleCrypto = new SimpleCrypto(key)
 
-        return simpleCrypto.decrypt(text)
+        return simpleCrypto.decrypt(text).toString()
     }
 
 
@@ -140,11 +140,9 @@ const Dialog = React.memo((props) => {
     }
 
     return (
-        <div className='flexbox messages-wrap'>
-            <Messages />
-            <div className='dialog-window'>
+        <div className='dialog-window'>
                 {props.dialogData ? <>
-                <DailogHeader interlocutor={interlocutor} />
+                {/* <DailogHeader interlocutor={interlocutor} /> */}
 
                 <div className="dialogs-wrap">
                     {props.dialogData ? props.dialogData.map((value, i) => 
@@ -198,7 +196,6 @@ const Dialog = React.memo((props) => {
                  </div>}
                 
             </div>
-        </div>
     )
 })
 
