@@ -14,7 +14,7 @@ import download from './../../images/download.svg'
 import Textarea from './Textarea';
 
 
-const Dialog = React.memo((props) => {
+const Dialog = React.memo((props) => { 
     
     var dialogId = props.match.params.dialogId;
         
